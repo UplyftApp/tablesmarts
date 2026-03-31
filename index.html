@@ -162,6 +162,8 @@
     .cat-popculture:hover { border-color:#FF50C8; box-shadow:0 12px 40px rgba(255,80,200,.3); }
     .cat-random   { background: linear-gradient(135deg,rgba(255,180,0,.18),rgba(255,180,0,.04)); border-color:rgba(255,180,0,.3); }
     .cat-random:hover   { border-color:#FFB400; box-shadow:0 12px 40px rgba(255,180,0,.3); }
+    .cat-nature   { background: linear-gradient(135deg,rgba(80,200,80,.18),rgba(80,200,80,.04)); border-color:rgba(80,200,80,.3); }
+    .cat-nature:hover   { border-color:#50C878; box-shadow:0 12px 40px rgba(80,200,80,.3); }
 
     /* ── DIFFICULTY ── */
     .difficulty { padding: 40px 20px; align-items: center; text-align: center; }
@@ -1055,7 +1057,68 @@
       .ttal-g-body { padding: 20px 12px; gap: 12px; }
       .ttal-stmt-card { padding: 16px 18px; gap: 12px; }
     }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      position: relative; z-index: 1;
+      width: 100%; padding: 28px 20px;
+      border-top: 1px solid var(--border);
+      background: rgba(6,6,26,0.8);
+      text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .footer-links {
+      display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+    }
+    .footer-links a {
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--lime); }
+    .footer-coffee {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 7px 16px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      transition: all 0.2s;
+    }
+    .footer-coffee:hover {
+      background: rgba(255,215,0,0.12);
+      border-color: rgba(255,215,0,0.4);
+      color: var(--yellow);
+    }
+    .footer-copy {
+      color: rgba(255,255,255,0.25);
+      font-size: 0.72rem;
+      letter-spacing: 0.3px;
+    }
   </style>
+
+  <!-- ══════════════════════════════════════════════════
+       GOOGLE ANALYTICS 4
+       Replace G-XXXXXXXXXX with your Measurement ID
+       then remove the HTML comment tags to activate.
+  ═══════════════════════════════════════════════════ -->
+  <!--
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+  -->
 </head>
 <body>
 
@@ -1731,6 +1794,7 @@
     <div class="cat-card cat-health"    onclick="selectCat('health')">   <div class="cat-card-icon">🩺</div><div class="cat-card-name">Health</div></div>
     <div class="cat-card cat-popculture" onclick="selectCat('popculture')"><div class="cat-card-icon">🌟</div><div class="cat-card-name">Pop Culture</div></div>
     <div class="cat-card cat-random"    onclick="selectCat('random')">   <div class="cat-card-icon">🎲</div><div class="cat-card-name">Random</div></div>
+    <div class="cat-card cat-nature"    onclick="selectCat('nature')">   <div class="cat-card-icon">🌿</div><div class="cat-card-name">Nature & Animals</div></div>
   </div>
 </div>
 
@@ -2134,6 +2198,40 @@ const QUESTIONS = {
     ],
   },
 
+  // ── NATURE & ANIMALS ────────────────────────────────
+  nature: {
+    easy: [
+      {q:"What is the largest animal on Earth?",                          a:["Blue whale","African elephant","Giant squid","Great white shark"]},
+      {q:"What is the fastest land animal?",                              a:["Cheetah","Lion","Gazelle","Horse"]},
+      {q:"What is the tallest animal in the world?",                      a:["Giraffe","Elephant","Camel","Ostrich"]},
+      {q:"Which is the only mammal capable of true flight?",              a:["Bat","Flying squirrel","Sugar glider","Colugo"]},
+      {q:"What do caterpillars transform into?",                          a:["Butterflies or moths","Beetles","Dragonflies","Bees"]},
+      {q:"Where do wild giant pandas naturally live?",                    a:["China","Japan","India","Thailand"]},
+      {q:"What is the largest big cat in the world?",                     a:["Tiger","Lion","Jaguar","Leopard"]},
+      {q:"What is a group of wolves called?",                             a:["A pack","A herd","A pride","A flock"]},
+    ],
+    medium: [
+      {q:"Which mammals are the only ones known to lay eggs?",            a:["Platypus and echidna","Platypus only","Pangolin","Armadillo"]},
+      {q:"How do trees in a forest share nutrients with each other?",     a:["Through underground fungal networks","Via root-to-root contact","Through airborne spores","They don't share nutrients"]},
+      {q:"Which bird is famous for its extraordinary ability to mimic sounds, including chainsaws?", a:["Lyrebird","Mockingbird","Mynah bird","Cockatoo"]},
+      {q:"What is a group of flamingos called?",                          a:["A flamboyance","A colony","A flock","A stand"]},
+      {q:"How do sea otters prevent themselves from drifting apart while sleeping?", a:["They hold hands (paws)","They anchor to kelp","They link tails","They swim in circles"]},
+      {q:"What is the world's largest land animal?",                      a:["African elephant","Hippopotamus","White rhinoceros","Giraffe"]},
+      {q:"How many hearts does an octopus have?",                         a:["3","1","2","4"]},
+      {q:"What term describes an animal that is primarily active at night?", a:["Nocturnal","Diurnal","Crepuscular","Estivating"]},
+    ],
+    hard: [
+      {q:"What toxin do poison dart frogs produce that blocks sodium channels in nerve cells?", a:["Batrachotoxin","Tetrodotoxin","Curare","Bufotoxin"]},
+      {q:"What biological process allows tardigrades (water bears) to survive extreme environments?", a:["Cryptobiosis","Anhydrobiosis","Diapause","Torpor"]},
+      {q:"How many types of color photoreceptors do mantis shrimp have (humans have 3)?", a:["16","8","12","6"]},
+      {q:"What is the deepest-diving mammal ever recorded?",              a:["Cuvier's beaked whale","Sperm whale","Elephant seal","Narwhal"]},
+      {q:"What deadly phenomenon occurs when army ants accidentally form a circular loop?", a:["An ant mill — they march in circles until exhaustion","A swarm reset","A colony divergence","A soldier lock"]},
+      {q:"Axolotls are native to which specific body of water?",          a:["Lake Xochimilco near Mexico City","Lake Titicaca","The Florida Everglades","The Amazon Basin"]},
+      {q:"What makes the pistol shrimp's snapping claw so remarkable?",  a:["It generates a cavitation bubble briefly hotter than the Sun's surface","It delivers a powerful electric jolt","It injects paralyzing venom","It emits an ultrasonic blast"]},
+      {q:"Approximately what percentage of all known animal species are insects?", a:["About 80%","About 50%","About 30%","About 60%"]},
+    ],
+  },
+
 };
 
 // ═══════════════════════════════════════════════════
@@ -2155,7 +2253,8 @@ const CAT_NAMES = {
   science:'🔬 Science', history:'📚 History', movies:'🎬 Movies & TV',
   sports:'⚽ Sports', geography:'🌍 Geography', music:'🎵 Music',
   food:'🍕 Food & Cooking', brain:'🧩 Brain Teasers',
-  health:'🩺 Health', popculture:'🌟 Pop Culture', random:'🎲 Random'
+  health:'🩺 Health', popculture:'🌟 Pop Culture', random:'🎲 Random',
+  nature:'🌿 Nature & Animals'
 };
 const DIFF_POINTS = { easy:10, medium:15, hard:20 };
 const LETTERS = ['A','B','C','D'];
@@ -2192,9 +2291,9 @@ function startGame() {
   if (currentCat === 'random') {
     const pool = [];
     Object.keys(QUESTIONS).forEach(cat => pool.push(...QUESTIONS[cat][currentDiff]));
-    gameQs = shuffle(pool).slice(0, 8);
+    gameQs = pickFreshQuestions(pool, 'random_' + currentDiff, 8);
   } else {
-    gameQs = shuffle([...QUESTIONS[currentCat][currentDiff]]);
+    gameQs = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], currentCat + '_' + currentDiff, 8);
   }
   currentQIdx  = 0;
   score        = 0;
@@ -2389,7 +2488,7 @@ function goBackFromDifficulty() {
 //  HOST / QUIZ MASTER MODE
 // ═══════════════════════════════════════════════════
 function startHostGame() {
-  gameQs       = shuffle([...QUESTIONS[currentCat][currentDiff]]);
+  gameQs       = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], currentCat + '_' + currentDiff, 8);
   currentQIdx  = 0;
   score        = 0;
   correctCount = 0;
@@ -3002,6 +3101,43 @@ function quitTaboo() {
 })();
 
 // ── UTILS ──
+// ═══════════════════════════════════════════════════
+//  QUESTION DEDUPLICATION  (persisted via localStorage)
+// ═══════════════════════════════════════════════════
+const SEEN_KEY = 'ts_seen_v1';
+
+function _getSeenStore() {
+  try { return JSON.parse(localStorage.getItem(SEEN_KEY) || '{}'); } catch(e) { return {}; }
+}
+function _saveSeenStore(store) {
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify(store)); } catch(e) {}
+}
+
+// Returns `count` questions from `pool`, avoiding any already seen under `storeKey`.
+// If fewer than `count` unseen questions remain, the seen list for that key resets automatically.
+function pickFreshQuestions(pool, storeKey, count) {
+  const store   = _getSeenStore();
+  const seenSet = new Set(store[storeKey] || []);
+  let   unseen  = pool.filter(q => !seenSet.has(q.q));
+
+  if (unseen.length < count) {
+    // Exhausted — wipe the seen list and start fresh
+    delete store[storeKey];
+    _saveSeenStore(store);
+    unseen = [...pool];
+  }
+
+  const picked = shuffle([...unseen]).slice(0, count);
+
+  // Persist the newly seen questions
+  const fresh = _getSeenStore();
+  if (!fresh[storeKey]) fresh[storeKey] = [];
+  picked.forEach(q => { if (!fresh[storeKey].includes(q.q)) fresh[storeKey].push(q.q); });
+  _saveSeenStore(fresh);
+
+  return picked;
+}
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -3554,5 +3690,19 @@ function showTTALFinal() {
 
 function quitTTAL() { showScreen('home'); }
 </script>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="#" onclick="showScreen('home');return false;">Home</a>
+    <a href="mailto:hello@tablesmarts.com">Contact</a>
+    <a href="#" onclick="alert('TableSmarts does not collect or store any personal data.');return false;">Privacy</a>
+  </div>
+  <!-- Buy Me a Coffee — replace YOUR_USERNAME with your buymeacoffee.com handle -->
+  <a class="footer-coffee" href="https://www.buymeacoffee.com/YOUR_USERNAME" target="_blank" rel="noopener">
+    ☕ Support TableSmarts
+  </a>
+  <div class="footer-copy">© <span id="footer-year"></span> TableSmarts. All rights reserved.</div>
+</footer>
+<script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
