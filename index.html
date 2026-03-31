@@ -29,7 +29,7 @@
       color: white;
       font-family: 'Roboto Condensed', sans-serif;
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow-x: clip;
     }
 
     /* ── ANIMATED BACKGROUND ── */
@@ -1082,11 +1082,12 @@
     .footer-links a:hover { color: var(--lime); }
     .footer-coffee {
       display: inline-flex; align-items: center; gap: 7px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,215,0,0.12);
+      border: 1px solid rgba(255,215,0,0.4);
       border-radius: 20px;
       padding: 7px 16px;
-      color: rgba(255,255,255,0.6);
+      margin-top: 6px;
+      color: var(--yellow);
       text-decoration: none;
       font-size: 0.8rem;
       font-weight: 700;
@@ -1094,8 +1095,8 @@
       transition: all 0.2s;
     }
     .footer-coffee:hover {
-      background: rgba(255,215,0,0.12);
-      border-color: rgba(255,215,0,0.4);
+      background: rgba(255,215,0,0.22);
+      border-color: rgba(255,215,0,0.7);
       color: var(--yellow);
     }
     .footer-copy {
