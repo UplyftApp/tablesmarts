@@ -119,8 +119,14 @@
       border-radius: 100px; cursor: pointer;
       font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 800;
       transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
-      margin-bottom: 26px; margin-top: 16px;
+      margin-bottom: 26px;
     }
+    .screen-header .back-btn { margin-top: 16px; }
+    /* Game-header quit buttons: vertically flush + extra separation from chips */
+    .game-info .back-btn,
+    .bt-header-left .back-btn,
+    .wyr-header-left .back-btn,
+    .ttal-g-header-left .back-btn { margin-bottom: 0; margin-right: 8px; }
     .back-btn:hover { border-color: var(--lime); color: var(--lime); }
     .screen-title { font-family: 'Roboto Condensed', sans-serif; font-weight: 900; font-size: clamp(2rem, 6vw, 3.8rem); color: white; margin-bottom: 6px; }
     .screen-subtitle { color: rgba(255,255,255,0.68); font-size: 1rem; font-weight: 700; }
