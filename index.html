@@ -1907,11 +1907,11 @@
 <div id="screen-results" class="screen results">
   <div class="results-trophy" id="r-trophy">🏆</div>
   <div class="results-title" id="r-title">AMAZING!</div>
-  <div class="results-score"><span id="r-score">0</span><span> / 8</span></div>
+  <div class="results-score"><span id="r-score">0</span><span id="r-total"> / 20</span></div>
   <div class="results-stars" id="r-stars">⭐⭐⭐⭐⭐</div>
   <div class="results-msg" id="r-msg">You're a trivia master!</div>
   <div class="results-btns">
-    <button class="btn-primary"   onclick="playAgain()">🔄 Play Again</button>
+    <button class="btn-primary"   onclick="playAgain()" id="r-continue-btn">▶ Continue Session</button>
     <button class="btn-secondary" onclick="showScreen('category')">📋 New Category</button>
     <button class="btn-secondary" onclick="showScreen('home')">🏠 Home</button>
   </div>
@@ -2378,9 +2378,9 @@ function startGame() {
   if (currentCat === 'random') {
     const pool = [];
     Object.keys(QUESTIONS).forEach(cat => pool.push(...QUESTIONS[cat][currentDiff]));
-    gameQs = pickFreshQuestions(pool, 'random_' + currentDiff, 8);
+    gameQs = pickFreshQuestions(pool, 'random_' + currentDiff, 20);
   } else {
-    gameQs = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], currentCat + '_' + currentDiff, 8);
+    gameQs = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], currentCat + '_' + currentDiff, 20);
   }
   currentQIdx  = 0;
   score        = 0;
@@ -2537,8 +2537,11 @@ function showResults() {
   document.getElementById('r-stars').textContent  = stars;
 
   // Label changes for host mode
-  const scoreLabel = document.querySelector('#screen-results .results-score span:last-child');
-  scoreLabel.textContent = gameMode === 'host' ? ` / ${total} answered` : ` / ${total}`;
+  document.getElementById('r-total').textContent = gameMode === 'host' ? ` / ${total} answered` : ` / ${total}`;
+
+  // Continue button label shows the current category
+  const catName = CAT_NAMES[currentCat] || 'Same Category';
+  document.getElementById('r-continue-btn').textContent = `▶ Continue: ${catName}`;
 
   // Animate score count-up
   document.getElementById('r-score').textContent  = '0';
@@ -2575,7 +2578,13 @@ function goBackFromDifficulty() {
 //  HOST / QUIZ MASTER MODE
 // ═══════════════════════════════════════════════════
 function startHostGame() {
-  gameQs       = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], currentCat + '_' + currentDiff, 8);
+  if (currentCat === 'random') {
+    const pool = [];
+    Object.keys(QUESTIONS).forEach(cat => pool.push(...QUESTIONS[cat][currentDiff]));
+    gameQs = pickFreshQuestions(pool, 'random_' + currentDiff, 20);
+  } else {
+    gameQs = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], currentCat + '_' + currentDiff, 20);
+  }
   currentQIdx  = 0;
   score        = 0;
   correctCount = 0;
