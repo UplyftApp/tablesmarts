@@ -320,7 +320,7 @@
     /* ── TOAST ── */
     .toast {
       position:fixed; bottom:100px; left:50%;
-      transform:translateX(-50%) translateY(140px);
+      transform:translateX(-50%) translateY(300px);
       padding:10px 24px; border-radius:100px;
       font-weight:900; font-size:1.05rem; z-index:9999;
       transition:transform .18s ease; pointer-events:none; white-space:nowrap;
@@ -405,7 +405,7 @@
     }
     .taboo-body {
       flex: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 28px 24px; max-width: 800px; margin: 0 auto; width: 100%;
+      justify-content: flex-start; padding: 14px 24px; max-width: 800px; margin: 0 auto; width: 100%;
     }
     .taboo-target-card {
       background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.18);
@@ -506,8 +506,8 @@
     }
     .charades-body {
       flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 32px 24px; max-width: 800px; margin: 0 auto; width: 100%;
+      align-items: center; justify-content: flex-start;
+      padding: 16px 24px; max-width: 800px; margin: 0 auto; width: 100%;
     }
 
     /* Timer ring */
@@ -733,8 +733,8 @@
 
     .bt-body {
       flex:1; display:flex; flex-direction:column; align-items:center;
-      justify-content:center; padding:36px 24px; max-width:760px;
-      width:100%; margin:0 auto; gap:28px;
+      justify-content:flex-start; padding:18px 24px; max-width:760px;
+      width:100%; margin:0 auto; gap:18px;
     }
     .bt-card-wrap {
       width:100%; background:var(--card); border:2px solid var(--border);
@@ -815,7 +815,7 @@
     }
     .wyr-body {
       flex:1; display:flex; flex-direction:column; align-items:center;
-      justify-content:center; padding:28px 20px; width:100%;
+      justify-content:flex-start; padding:14px 20px; width:100%;
       max-width:800px; margin:0 auto; gap:20px;
     }
     .wyr-prompt-label {
@@ -978,7 +978,7 @@
     .ttal-g-header-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .ttal-g-body {
       flex:1; display:flex; flex-direction:column; align-items:center;
-      justify-content:center; padding:32px 20px; max-width:720px;
+      justify-content:flex-start; padding:16px 20px; max-width:720px;
       width:100%; margin:0 auto; gap:18px;
     }
     .ttal-whose-turn {
@@ -1057,7 +1057,7 @@
       .difficulty { padding: 28px 8px; }
 
       /* Brain Teasers / Riddles mobile */
-      .bt-body { padding: 24px 14px; gap: 18px; }
+      .bt-body { padding: 12px 14px; gap: 14px; }
       .bt-card-wrap { padding: 28px 20px; }
       .bt-actions { flex-direction: column; align-items: stretch; }
       .bt-reveal-btn { padding: 16px 24px; }
@@ -1066,12 +1066,12 @@
       .wyr-options { flex-direction: column; }
       .wyr-opt { min-height: 120px; padding: 24px 18px; }
       .wyr-vs { align-self: auto; }
-      .wyr-body { padding: 18px 12px; gap: 14px; }
+      .wyr-body { padding: 10px 12px; gap: 14px; }
 
       /* TTAL mobile */
       .ttal-mode-grid { grid-template-columns: 1fr; }
       .ttal-input-card { padding: 24px 16px; }
-      .ttal-g-body { padding: 20px 12px; gap: 12px; }
+      .ttal-g-body { padding: 10px 12px; gap: 12px; }
       .ttal-stmt-card { padding: 16px 18px; gap: 12px; }
     }
 
@@ -3631,22 +3631,35 @@ function _saveSeenStore(store) {
 }
 
 // Returns `count` questions from `pool`, avoiding any already seen under `storeKey`.
-// If fewer than `count` unseen questions remain, the seen list for that key resets automatically.
+// When fewer than `count` unseen remain, takes all unseen first, then fills from the
+// least-recently-seen questions so the most recently played ones are pushed furthest back.
 function pickFreshQuestions(pool, storeKey, count) {
-  const store   = _getSeenStore();
-  const seenSet = new Set(store[storeKey] || []);
-  let   unseen  = pool.filter(q => !seenSet.has(q.q));
+  const store    = _getSeenStore();
+  const seenList = store[storeKey] || []; // ordered oldest → newest
+  const seenSet  = new Set(seenList);
+  const unseen   = pool.filter(q => !seenSet.has(q.q));
 
-  if (unseen.length < count) {
-    // Exhausted — wipe the seen list and start fresh
+  let picked;
+  if (unseen.length >= count) {
+    // Normal path: plenty of fresh questions
+    picked = shuffle([...unseen]).slice(0, count);
+  } else {
+    // Cycle path: use all unseen first, then fill from seen pool oldest-first
+    // so the most-recently-played questions are least likely to reappear immediately
+    const freshFirst = shuffle([...unseen]);
+    const oldestSeen = seenList
+      .map(qText => pool.find(q => q.q === qText))
+      .filter(Boolean); // oldest at index 0, most-recent at end
+    const needed = count - freshFirst.length;
+    // Shuffle the oldest slice to avoid identical ordering between sessions
+    const recycled = shuffle(oldestSeen.slice(0, needed + (oldestSeen.length - needed)));
+    picked = [...freshFirst, ...recycled.slice(0, needed)];
+    // Reset seen tracking for this key so the cycle starts clean
     delete store[storeKey];
     _saveSeenStore(store);
-    unseen = [...pool];
   }
 
-  const picked = shuffle([...unseen]).slice(0, count);
-
-  // Persist the newly seen questions
+  // Persist picked questions as seen
   const fresh = _getSeenStore();
   if (!fresh[storeKey]) fresh[storeKey] = [];
   picked.forEach(q => { if (!fresh[storeKey].includes(q.q)) fresh[storeKey].push(q.q); });
