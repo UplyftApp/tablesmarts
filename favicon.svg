@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="32" fill="#06061A"/>
+
+  <!-- LOW-POLY STAR — lime green, hard-faceted -->
+  <!-- Center pentagon facets -->
+  <polygon points="32,32 39,23 43,35" fill="#adff2f"/>
+  <polygon points="32,32 43,35 32,43" fill="#7db800"/>
+  <polygon points="32,32 32,43 21,35" fill="#5a9900"/>
+  <polygon points="32,32 21,35 25,23" fill="#6b9900"/>
+  <polygon points="32,32 25,23 39,23" fill="#c8f040"/>
+
+  <!-- Point spikes -->
+  <polygon points="32,6 25,23 39,23"  fill="#deff88"/>
+  <polygon points="57,24 39,23 43,35" fill="#c8f040"/>
+  <polygon points="47,53 43,35 32,43" fill="#7db800"/>
+  <polygon points="17,53 32,43 21,35" fill="#4a8800"/>
+  <polygon points="7,24 21,35 25,23"  fill="#6b9900"/>
+</svg>
