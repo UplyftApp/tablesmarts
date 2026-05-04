@@ -1159,6 +1159,60 @@
       font-size: 0.72rem;
       letter-spacing: 0.3px;
     }
+
+    /* ── AD BANNER ── */
+    .ad-banner-wrap {
+      width: 100%; display: flex; flex-direction: column; align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 10px 14px;
+      margin-top: 40px;
+      position: relative;
+    }
+    .ad-banner-wrap.ad-hidden { display: none; }
+    .ad-banner-label {
+      font-family: 'Orbitron', sans-serif; font-size: 0.5rem;
+      color: rgba(255,255,255,0.2); letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .ad-slot {
+      display: flex; align-items: center; justify-content: center;
+      width: 728px; max-width: 100%; height: 90px;
+      background: rgba(255,255,255,0.04);
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.18);
+      font-family: 'Orbitron', sans-serif; font-size: 0.68rem; letter-spacing: 2px;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .ad-slot:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.28);
+      color: rgba(255,255,255,0.32);
+    }
+    @media (max-width: 520px) {
+      .ad-slot { width: 100%; height: 50px; font-size: 0.58rem; }
+    }
+    .ad-close-btn {
+      position: absolute; top: 6px; right: 10px;
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.25); font-size: 0.6rem;
+      font-family: 'Orbitron', sans-serif; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 5px;
+      transition: color 0.2s;
+    }
+    .ad-close-btn:hover { color: rgba(255,255,255,0.55); }
+    .ad-dev-restore {
+      position: fixed; bottom: 14px; right: 14px; z-index: 901;
+      background: rgba(173,255,47,0.1);
+      border: 1px solid rgba(173,255,47,0.25);
+      border-radius: 4px; cursor: pointer;
+      color: var(--lime); font-family: 'Orbitron', sans-serif;
+      font-size: 0.5rem; font-weight: 900; letter-spacing: 1.5px;
+      text-transform: uppercase; padding: 5px 9px;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .ad-dev-restore.ad-restore-visible { opacity: 1; pointer-events: auto; }
+    .ad-dev-restore:hover { background: rgba(173,255,47,0.18); }
   </style>
 
   <!-- Google tag (gtag.js) -->
@@ -1173,6 +1227,7 @@
 <body>
 
 <div class="bg-glow"></div>
+<button class="ad-dev-restore" id="adDevRestore" onclick="adToggle(true)">◉ Show Ad</button>
 <div class="toast" id="toast"></div>
 
 <header id="site-header">
@@ -1448,6 +1503,14 @@
       <div class="game-card-title">2 TRUTHS 1 LIE</div>
       <div class="game-card-desc">Can you spot the lie? Bluff and deceive!</div>
     </div>
+  </div>
+  <!-- Ad Banner -->
+  <div class="ad-banner-wrap" id="adBannerWrap">
+    <button class="ad-close-btn" onclick="adToggle(false)" title="Hide (dev)">✕ hide</button>
+    <div class="ad-banner-label">Advertisement</div>
+    <a class="ad-slot" href="#" id="adSlotLink" target="_blank" rel="noopener">
+      728 × 90 — Ad Placeholder
+    </a>
   </div>
 </div>
 
@@ -1928,6 +1991,8 @@
   <div class="results-msg" id="r-msg">You're a trivia master!</div>
   <div class="results-btns">
     <button class="btn-primary"   onclick="playAgain()" id="r-continue-btn">▶ Continue Session</button>
+    <button class="btn-secondary" onclick="changeDifficulty('easier')" id="r-easier-btn">▼ Play Easier</button>
+    <button class="btn-secondary" onclick="changeDifficulty('harder')" id="r-harder-btn">▲ Play Harder</button>
     <button class="btn-secondary" onclick="showScreen('category')">📋 New Category</button>
     <button class="btn-secondary" onclick="showScreen('home')">🏠 Home</button>
   </div>
@@ -1961,6 +2026,30 @@ const QUESTIONS = {
       {q:"What keeps the planets in orbit around the Sun?",               a:["Gravity","Magnetism","Inertia","Friction"]},
       {q:"What do you call a scientist who studies animals?",             a:["Zoologist","Biologist","Botanist","Geologist"]},
       {q:"What is the most common gas in Earth's atmosphere?",            a:["Nitrogen","Oxygen","Carbon dioxide","Argon"]},
+      {q:"What is the chemical symbol for iron?",                         a:["Fe","Ir","In","Io"]},
+      {q:"What planet is known as the 'morning star' or 'evening star'?",a:["Venus","Mercury","Mars","Jupiter"]},
+      {q:"What part of a plant conducts photosynthesis?",                 a:["Leaves","Roots","Stem","Flowers"]},
+      {q:"What is the unit of electrical current?",                       a:["Ampere","Volt","Ohm","Watt"]},
+      {q:"How many moons does Mars have?",                                a:["2","0","1","4"]},
+      {q:"What does AI stand for in technology?",                         a:["Artificial Intelligence","Advanced Integration","Automated Instruction","Applied Intelligence"]},
+      {q:"Who founded the space company SpaceX?",                         a:["Elon Musk","Jeff Bezos","Richard Branson","Paul Allen"]},
+      {q:"What is a 'self-driving car'?",                                 a:["A vehicle that navigates and drives autonomously without human input","A car with automatic transmission","A car controlled remotely by an operator","A car that only parks itself"]},
+      {q:"What is the Sun primarily composed of?",                        a:["Hydrogen and helium","Oxygen and carbon","Nitrogen and helium","Iron and nickel"]},
+      {q:"What is the primary fuel used by the human brain?",             a:["Glucose","Protein","Fat","Oxygen"]},
+      {q:"What does a seismograph measure?",                              a:["Earthquakes","Rainfall","Wind speed","Temperature"]},
+      {q:"What is the moon's surface gravity compared to Earth's?",       a:["About 1/6th of Earth's","About half of Earth's","The same as Earth's","About 1/3 of Earth's"]},
+      {q:"What gas do humans exhale more of than they inhale?",           a:["Carbon dioxide","Nitrogen","Oxygen","Argon"]},
+      {q:"What is the smallest unit of life?",                            a:["Cell","Atom","Molecule","Organism"]},
+      {q:"What is 'machine learning' in simple terms?",                   a:["Teaching computers to learn from data without explicit programming","Building physical robots","Programming computers step-by-step","Using computers to replace human teachers"]},
+      {q:"How many elements are on the periodic table?",                  a:["118","100","200","92"]},
+      {q:"What is an exoplanet?",                                         a:["A planet orbiting a star other than our Sun","A dwarf planet beyond Neptune","A moon orbiting a gas giant","A rocky body in the asteroid belt"]},
+      {q:"What company makes electric cars called Tesla?",                a:["Tesla, Inc.","Amazon","Google","Apple"]},
+      {q:"What does DNA stand for?",                                      a:["Deoxyribonucleic acid","Diribonucleic acid","Deoxyribose acid","Dynamic Nucleotide Acid"]},
+      {q:"What is the outermost layer of the Earth called?",              a:["Crust","Mantle","Core","Lithosphere"]},
+      {q:"How many bones are in the adult human body?",                   a:["206","186","226","256"]},
+      {q:"What is photosynthesis?",                                       a:["The process plants use to convert sunlight into food","The way animals digest food","The evaporation of water from leaves","The process of plant respiration"]},
+      {q:"What is the name of SpaceX's main reusable orbital rocket?",   a:["Falcon 9","Starship","Atlas V","Delta IV"]},
+      {q:"What is 'gravity'?",                                            a:["A force that attracts objects with mass toward each other","A magnetic force between planets","The push that keeps planets in orbit","A property of light bending around planets"]},
     ],
     medium: [
       {q:"What is the chemical symbol for gold?",                     a:["Au","Go","Gd","Ag"]},
@@ -1983,6 +2072,30 @@ const QUESTIONS = {
       {q:"What is the most abundant metal in Earth's crust?",         a:["Aluminum","Iron","Calcium","Sodium"]},
       {q:"What is the speed of sound in air at room temperature?",    a:["~343 m/s","~299 m/s","~500 m/s","~150 m/s"]},
       {q:"What type of waves does visible light consist of?",         a:["Electromagnetic waves","Sound waves","Gamma rays","Thermal radiation"]},
+      {q:"What is SpaceX's Starship designed to do?",                     a:["Carry humans to Mars and the Moon on a fully reusable spacecraft","Launch satellites only","Replace the Space Shuttle","Deliver cargo to the ISS only"]},
+      {q:"What is the main goal of Zoox, Amazon's autonomous vehicle company?", a:["Build a purpose-built fully autonomous robotaxi with no steering wheel","Create self-driving software for existing cars","Build electric delivery trucks","Design next-generation EV batteries"]},
+      {q:"What does GPT stand for in AI models like ChatGPT?",            a:["Generative Pre-trained Transformer","General Purpose Technology","Graphical Processing Technique","Global Parallel Threading"]},
+      {q:"What is the James Webb Space Telescope primarily designed to study?", a:["The early universe, exoplanet atmospheres, and distant galaxies in infrared","The surface of the Moon","Nearby asteroids in the solar system","Solar flares and coronal mass ejections"]},
+      {q:"What is 'deep learning' in AI?",                                a:["A subset of machine learning using multi-layered neural networks","Advanced computer memory architecture","A method for storing large datasets","Programming robots with logic trees"]},
+      {q:"What is nuclear fusion and why is it significant for energy?",  a:["Joining atoms to release massive energy — the process powering the Sun, potentially offering clean limitless power","Splitting atoms in a controlled reaction for electricity","A dangerous industrial process producing radioactive waste","Combining fossil fuels at high pressure"]},
+      {q:"What is the Large Hadron Collider (LHC)?",                     a:["The world's largest particle accelerator at CERN used to study fundamental particles","A large telescope in the Swiss Alps","A nuclear fusion reactor","A deep underground cosmic ray observatory"]},
+      {q:"What is the Starlink constellation built by SpaceX?",           a:["A global broadband internet network of thousands of satellites in low Earth orbit","A space tourism programme","A constellation of weather satellites","A military satellite network"]},
+      {q:"What is 'quantum computing'?",                                  a:["Computing using quantum mechanical phenomena like superposition and entanglement","Very fast classical computing","Computing using quantum encryption only","A theoretical model of computing"]},
+      {q:"Who was the first woman in space?",                             a:["Valentina Tereshkova (1963)","Sally Ride","Mae Jemison","Svetlana Savitskaya"]},
+      {q:"What did NASA's Perseverance rover successfully produce on Mars in 2021?", a:["Oxygen from the Martian atmosphere using the MOXIE experiment","Liquid water from ice","A soil sample suitable for plant growth","A map of the Martian surface"]},
+      {q:"What is 'Moore's Law'?",                                        a:["The observation that transistor count in chips doubles roughly every two years","The law that software expands to fill available hardware","The principle that internet bandwidth grows 50% annually","The rule that computer prices halve every decade"]},
+      {q:"What is an artificial neural network inspired by?",             a:["The structure and function of the human brain's interconnected neurons","The network architecture of the internet","A grid-based computer chip design","Radio signal relay towers"]},
+      {q:"What planet has a ring system visible from Earth with a backyard telescope?", a:["Saturn","Jupiter","Uranus","Neptune"]},
+      {q:"What is the greenhouse effect?",                                a:["Atmospheric gases trap solar heat, warming Earth's surface beyond what would occur naturally","Greenhouses built to offset carbon emissions","Plants producing oxygen that heats the air","Ocean currents redistributing warmth globally"]},
+      {q:"How does SpaceX's Falcon 9 reusable booster return to Earth?",  a:["Propulsive vertical landing using engine thrust","Parachute-assisted water landing","Gliding to a runway like a plane","Being caught by a net at the launch site"]},
+      {q:"What is 'CRISPR-Cas9' used for?",                               a:["Precisely editing specific sequences of DNA in living organisms","Detecting viruses in blood samples","Producing insulin synthetically","Mapping the human genome"]},
+      {q:"What does a Large Language Model (LLM) like Claude or ChatGPT do?", a:["Generates human-like text by predicting the next word from vast training data","Controls robotic systems using language","Translates between languages only","Searches the internet for real-time answers"]},
+      {q:"What is the role of a GPU in AI training?",                     a:["Massively parallel processing makes it ideal for training neural networks quickly","Storing large AI model weights","Managing AI memory allocation","Connecting AI servers globally"]},
+      {q:"What is an 'electric vehicle' (EV)?",                           a:["A vehicle powered by an electric motor running on battery power instead of gasoline","A vehicle with a gasoline engine and a small electric motor","A vehicle powered by hydrogen fuel cells","A vehicle using solar panels exclusively"]},
+      {q:"What is the 'ozone layer' and why is it important?",            a:["A region of Earth's stratosphere absorbing most of the Sun's ultraviolet radiation","A layer of CO₂ that warms the atmosphere","The boundary between the troposphere and stratosphere","A belt of magnetized gas protecting Earth from solar wind"]},
+      {q:"What is Neuralink developing?",                                  a:["Brain-computer interface implants allowing direct communication between the brain and computers","Artificial hearts powered by brain signals","A neural network chip for smartphones","Non-invasive brain scanning technology"]},
+      {q:"What is the speed of light in a vacuum (rounded)?",             a:["299,792 km/s (~300,000 km/s)","150,000 km/s","500,000 km/s","186,000 km/s"]},
+      {q:"What year did SpaceX first successfully land a reusable orbital rocket booster?", a:["2015","2012","2018","2010"]},
     ],
     hard: [
       {q:"What is Avogadro's number (approximately)?",               a:["6.022 × 10²³","3.14 × 10²³","9.81 × 10²³","1.6 × 10¹⁹"]},
@@ -2005,6 +2118,30 @@ const QUESTIONS = {
       {q:"What is 'pair production' in physics?",                    a:["A high-energy photon converts into a particle and its antiparticle","Two protons collide to create new particles","A neutron splits into a proton and electron","Two electrons combine to form a positron"]},
       {q:"What is the Stefan-Boltzmann law about?",                  a:["Energy radiated by a blackbody is proportional to the fourth power of its temperature","Relationship between gas pressure and volume","Speed of electromagnetic waves in a medium","Decay rate of radioactive isotopes"]},
       {q:"What is 'antimatter'?",                                    a:["Matter composed of antiparticles with opposite charge to normal particles","Matter moving faster than light","Dark matter that cannot be detected","Matter at temperatures near absolute zero"]},
+      {q:"What is the 'alignment problem' in AI safety?",               a:["Ensuring AI systems pursue goals genuinely aligned with human values and intentions","Making AI systems compatible with different software standards","Aligning AI training clusters across data centres","Ensuring AI code is auditable and readable"]},
+      {q:"What is 'reinforcement learning from human feedback' (RLHF)?", a:["Training AI using human preference judgments to align model output with human values","Automatically retraining AI when users correct it","A supervised learning method using labeled human data","Crowdsourcing AI answers to validate accuracy"]},
+      {q:"What is the 'attention mechanism' in transformer AI models?",  a:["It lets the model weigh the relevance of different input tokens when generating each output token","The model's ability to focus on longer documents","A memory system storing context from prior conversations","An alert system that flags ambiguous requests"]},
+      {q:"What is Zoox's key technical innovation distinguishing it from other AV companies?", a:["A bidirectional vehicle purpose-built as a robotaxi with no steering wheel, pedals, or front/back","360-degree lidar with no camera sensors","A hydrogen fuel cell powertrain","HD-map-free navigation using only AI vision"]},
+      {q:"What is 'federated learning' in AI?",                         a:["Training AI across many devices locally and sharing only model updates — not raw data — to preserve privacy","Using a shared federal dataset to train all models","Training AI behind government firewalls","Encrypting all AI training data before use"]},
+      {q:"What is a 'diffusion model' in AI image generation?",         a:["A model trained to reverse a noise-adding process, enabling image synthesis from text prompts (e.g., Stable Diffusion, DALL-E)","A model that creates images by interpolating training examples","A neural network tracing outlines from text descriptions","A model that diffuses images across a distributed network"]},
+      {q:"What is 'retrieval-augmented generation' (RAG)?",             a:["Combining a language model with a retrieval system so it can reference external documents when generating answers","Training an AI by retrieving data from the internet continuously","A generation technique that retrieves images to describe them","Augmenting AI with real-time web scraping"]},
+      {q:"What is photonic computing's theoretical advantage over silicon computing?", a:["Using photons (light) instead of electrons for near-light-speed data processing with much lower energy use","Computing using photographic sensors for parallel input","A form of quantum computing using entangled photons","Ultra-high-resolution graphical processing"]},
+      {q:"What does AlphaFold2 (DeepMind) solve?",                      a:["Predicting the 3D structure of proteins from their amino acid sequence — a 50-year-old biology grand challenge","Designing new drug molecules from scratch","Simulating entire cell biological processes","Identifying disease-causing genetic mutations"]},
+      {q:"What is 'neural architecture search' (NAS)?",                 a:["Automated machine learning that discovers optimal neural network designs","Teaching neural networks to search the internet","Mapping biological neural structures in the brain","Training neural networks on unstructured web data"]},
+      {q:"What is the significance of Planck length (~1.6×10⁻³⁵ m)?",  a:["The smallest meaningful length scale — below it, quantum gravity dominates and classical physics breaks down","The diameter of a proton","The radius of a hydrogen atom","The wavelength of the shortest possible photon"]},
+      {q:"What is the 'halting problem' in computer science?",           a:["It is theoretically impossible to determine, for any arbitrary program and input, whether it will finish — proven undecidable by Turing","The challenge of stopping an AI once it starts self-improving","The problem of ending a program with an infinite loop","The limitation of quantum computers stopping mid-computation"]},
+      {q:"How many Raptor engines power SpaceX's Super Heavy booster?", a:["33","27","18","42"]},
+      {q:"What is 'edge computing' in AI deployment?",                  a:["Running AI inference locally on devices rather than remote servers, reducing latency and preserving privacy","Using the edge nodes of a neural network for faster training","Deploying AI only to devices in rural areas with poor connectivity","A memory optimization for running large models on small chips"]},
+      {q:"What does the DART mission (2022) demonstrate about planetary defence?", a:["NASA successfully deflected asteroid Dimorphos by crashing a spacecraft into it, proving kinetic impactor defence works","NASA mapped the interior of a near-Earth asteroid","NASA collected an asteroid sample and returned it to Earth","NASA confirmed a large asteroid will miss Earth in 2029"]},
+      {q:"What is 'superconductivity'?",                                a:["A state of exactly zero electrical resistance achieved when certain materials are cooled below a critical temperature","A material that conducts electricity twice as efficiently as copper","A state achieved when electrons pair at normal temperature","A property of all metals near absolute zero temperature"]},
+      {q:"What is the 'three-body problem' in orbital mechanics?",      a:["There is no general closed-form solution for the gravitational motion of three mutually interacting bodies","A puzzle about three satellites in the same orbit colliding","The challenge of landing three spacecraft simultaneously","The minimum crew size needed for a deep-space mission"]},
+      {q:"What is 'lidar' and why does it matter for autonomous vehicles?", a:["Laser-based ranging that creates precise 3D maps of surroundings in real time — key for obstacle detection in many AV systems","A radar variant using infrared instead of radio waves","A camera system using AI to classify objects","A satellite positioning system for lane-level accuracy"]},
+      {q:"What is 'retrieval-augmented generation' (RAG) designed to solve in LLMs?", a:["Giving a language model access to current or proprietary documents without retraining, reducing hallucinations","Making language models run faster on consumer hardware","Reducing the compute cost of training large models","Enabling AI to generate retrieval indexes automatically"]},
+      {q:"What is the 'technological singularity' in AI forecasting?",  a:["A hypothetical point where AI surpasses human intelligence and self-improves recursively, causing changes beyond prediction","The moment computing power becomes literally infinite","A collapse of the digital economy driven by AI automation","The theoretical end of Moore's Law"]},
+      {q:"What is 'topological quantum computing' attempting to achieve?", a:["Using anyons and topological states to create qubits inherently protected from environmental decoherence errors","Building a quantum computer using 3D chip topology","Combining classical and quantum computing in one processor","Computing using the topology of spacetime itself"]},
+      {q:"What is the Alcubierre drive concept?",                       a:["A proposed FTL drive that warps spacetime — contracting space ahead of a craft and expanding it behind — requiring exotic matter","A theoretical ion drive using quantum propulsion","A wormhole-based transport method","A rotating magnetic field drive for near-light-speed travel"]},
+      {q:"What is 'RLHF' and why is it central to modern AI model training?", a:["Reinforcement Learning from Human Feedback — it fine-tunes models to be more helpful, harmless, and honest by learning from human comparisons","A method of training AI entirely from raw internet data","A technique to speed up LLM inference using human-curated examples","A reward system where AI rates its own responses"]},
+      {q:"What does 'LiDAR' stand for?",                                a:["Light Detection And Ranging","Laser Infrared Detection and Ranging","Light Imaging Detection and Recording","Laser Inertial Detection and Ranging"]},
     ],
   },
 
@@ -2030,6 +2167,30 @@ const QUESTIONS = {
       {q:"What were the Crusades?",                                   a:["Religious wars launched by European Christians to reclaim the Holy Land","Trade wars between European city-states","Battles between Rome and Carthage","Viking raids across northern Europe"]},
       {q:"Who was the first American to orbit the Earth?",            a:["John Glenn","Alan Shepard","Neil Armstrong","Buzz Aldrin"]},
       {q:"What empire was Julius Caesar a leader of?",                a:["Roman Empire","Greek Empire","Ottoman Empire","Byzantine Empire"]},
+      {q:"In what year did the first moon landing take place?",          a:["1969","1967","1971","1972"]},
+      {q:"Who was the first President of the United States?",            a:["George Washington","Thomas Jefferson","John Adams","Benjamin Franklin"]},
+      {q:"What was the name of the ship that brought the Pilgrims to America in 1620?", a:["Mayflower","Endeavour","Santa María","Victory"]},
+      {q:"What country did the United States gain independence from?",   a:["Great Britain","France","Spain","Portugal"]},
+      {q:"Which ancient wonder was located in Alexandria, Egypt?",       a:["The Lighthouse of Alexandria","The Colossus of Rhodes","The Hanging Gardens","The Statue of Zeus"]},
+      {q:"Who was Cleopatra?",                                           a:["The last active ruler of the Ptolemaic Kingdom of ancient Egypt","A Roman empress","A Greek philosopher","The first female pharaoh of the Old Kingdom"]},
+      {q:"What was the Holocaust?",                                      a:["The systematic genocide of six million Jews and millions of others by Nazi Germany during WWII","The firebombing of German cities in WWII","The forced labour programme in Soviet gulags","The displacement of millions during WWI"]},
+      {q:"Which president issued the Emancipation Proclamation?",        a:["Abraham Lincoln","Ulysses S. Grant","Andrew Johnson","James Buchanan"]},
+      {q:"What ancient Greek city-state was famous for its warrior culture?", a:["Sparta","Athens","Corinth","Thebes"]},
+      {q:"In what century did the Renaissance begin?",                   a:["14th century (1300s)","12th century","16th century","10th century"]},
+      {q:"What was apartheid?",                                          a:["A system of institutionalised racial segregation in South Africa from 1948 to 1994","A colonial policy in French West Africa","A labour system in Portuguese Brazil","A racial classification system in the United States"]},
+      {q:"Who was the leader of Nazi Germany during World War II?",      a:["Adolf Hitler","Heinrich Himmler","Joseph Goebbels","Hermann Göring"]},
+      {q:"What was the Silk Road?",                                      a:["An ancient network of trade routes connecting China to Europe and the Middle East","A road built by Roman engineers through Persia","A trade alliance between Chinese city-states","A medieval European spice trade route"]},
+      {q:"What event started the First World War?",                      a:["The assassination of Archduke Franz Ferdinand of Austria in 1914","Germany invading Poland","The sinking of the Lusitania","The collapse of the Ottoman Empire"]},
+      {q:"Which civilisation built Machu Picchu?",                       a:["The Inca","The Aztec","The Maya","The Toltec"]},
+      {q:"What was the Cold War?",                                       a:["A geopolitical tension between the USA and USSR after WWII, fought through proxy wars and arms races","A series of battles in Arctic conditions","An economic rivalry between Europe and America","A global recession following WWII"]},
+      {q:"In which country did the Industrial Revolution begin?",        a:["England","France","Germany","United States"]},
+      {q:"Who was Mahatma Gandhi?",                                      a:["Indian independence leader who used nonviolent civil disobedience to free India from British rule","The first Prime Minister of independent India","A South African civil rights leader","An Egyptian independence leader"]},
+      {q:"What was the name of the allied military operation to liberate Western Europe on June 6, 1944?", a:["D-Day (Operation Overlord)","Operation Market Garden","Operation Barbarossa","Operation Sea Lion"]},
+      {q:"Which ancient civilisation created the first written legal code?", a:["Sumerians (Code of Ur-Nammu / Code of Hammurabi)","Egyptians","Greeks","Romans"]},
+      {q:"What year did the Soviet Union collapse?",                     a:["1991","1989","1985","1993"]},
+      {q:"Who was Nelson Mandela?",                                      a:["Anti-apartheid activist who became South Africa's first democratically elected president","A leader of the African National Congress who was assassinated","An independence leader who freed Zimbabwe","A South African civil rights leader who never held office"]},
+      {q:"What were the Crusades?",                                      a:["Religious wars launched by European Christians to reclaim the Holy Land from Muslim rule","Trade wars between Italian city-states","Battles between Rome and Carthage","Viking raids across northern Europe"]},
+      {q:"What is the significance of the year 1066 in English history?", a:["The Norman Conquest — William the Conqueror defeated Harold II at the Battle of Hastings","England united the kingdoms of Mercia and Northumbria","The signing of the Magna Carta","The Black Death arrived in England"]},
     ],
     medium: [
       {q:"In what year did the French Revolution begin?",              a:["1789","1776","1804","1815"]},
@@ -2052,6 +2213,30 @@ const QUESTIONS = {
       {q:"What city was divided by a wall from 1961 to 1989?",        a:["Berlin","Vienna","Warsaw","Prague"]},
       {q:"Who commanded the Allied forces on D-Day in 1944?",         a:["Dwight D. Eisenhower","Douglas MacArthur","George Patton","Bernard Montgomery"]},
       {q:"What was the 'Cold War'?",                                  a:["Political and military tension between the USA and USSR after WWII","A series of battles fought in Arctic conditions","Economic rivalry between Europe and America","A global recession following World War II"]},
+      {q:"What was the purpose of the NATO alliance formed in 1949?",    a:["Mutual defence among Western nations against Soviet expansion","To manage post-WWII reconstruction of Europe","To enforce the United Nations charter","To regulate international trade after WWII"]},
+      {q:"Who was Mao Zedong?",                                          a:["Founder of the People's Republic of China and leader of the Chinese Communist Party","The first democratically elected president of China","A Chinese reformist who modernized the economy","A Japanese-backed ruler of Manchuria"]},
+      {q:"What was the significance of the Gutenberg printing press (~1440)?", a:["It revolutionised the spread of information across Europe, enabling the Reformation and Scientific Revolution","It printed the first newspaper in Europe","It allowed the mass production of books in China","It ended the monopoly of monasteries on written records in England"]},
+      {q:"What was the Space Race?",                                     a:["Cold War competition between the USA and USSR to achieve firsts in space exploration","A scientific collaboration between the USA and USSR","A race to build the largest space station","Competition among private companies for government space contracts"]},
+      {q:"Who commanded the Continental Army during the American Revolutionary War?", a:["George Washington","Thomas Jefferson","Benjamin Franklin","John Adams"]},
+      {q:"What was the Marshall Plan (1948)?",                           a:["A US programme providing $13 billion to rebuild war-devastated Western European economies after WWII","A military alliance between the USA and Western Europe","A US plan to occupy Germany after WWII","A reconstruction programme for Japan"]},
+      {q:"What triggered the Great Depression?",                         a:["The stock market crash of October 1929 caused widespread bank failures and economic collapse","A global drought that destroyed agricultural output","Massive reparation payments demanded of Germany","The collapse of the gold standard in Europe"]},
+      {q:"What was the significance of the Magna Carta (1215)?",         a:["It established that the English king was subject to the rule of law, protecting certain rights of barons — a cornerstone of constitutional government","It abolished serfdom in England","It established the English Parliament","It ended the Hundred Years' War"]},
+      {q:"Who led the Bolshevik Revolution in Russia in 1917?",          a:["Vladimir Lenin","Leon Trotsky","Joseph Stalin","Karl Marx"]},
+      {q:"What was the Transatlantic Slave Trade?",                     a:["The forced transportation of approximately 12 million enslaved Africans to the Americas between the 16th and 19th centuries","Trade in slaves between African kingdoms","The movement of indentured servants from Europe to America","The sale of prisoners of war in ancient Rome"]},
+      {q:"What is the significance of the Battle of Gettysburg (1863)?", a:["The largest battle of the US Civil War — a Union victory that turned the tide of the war and inspired the Gettysburg Address","The first major battle of the Civil War","The battle that ended the Civil War","The battle that led directly to the Emancipation Proclamation"]},
+      {q:"What was 'détente' in Cold War history?",                     a:["A period of relaxed tensions and diplomatic engagement between the USA and USSR in the 1970s","A secret arms reduction agreement","A French-led European neutrality pact","The doctrine of mutually assured destruction"]},
+      {q:"Who was Ho Chi Minh?",                                         a:["Vietnamese communist revolutionary leader who fought for independence from France and later against US involvement","The South Vietnamese president during the Vietnam War","A North Korean leader allied with China","A Chinese general who advised North Vietnam"]},
+      {q:"What caused the fall of the Roman Empire in the West (476 AD)?", a:["A combination of military pressure from Germanic tribes, economic troubles, political instability, and overextension","A single military defeat by the Huns","A plague that wiped out the Roman legions","The transfer of power to Constantinople"]},
+      {q:"What was the significance of the Treaty of Westphalia (1648)?",a:["It ended the Thirty Years' War and established the modern concept of state sovereignty","It created the Holy Roman Empire","It ended the Hundred Years' War between France and England","It divided the New World between Spain and Portugal"]},
+      {q:"Who was Simon Bolívar?",                                       a:["A military and political leader who liberated much of South America from Spanish colonial rule","The first president of Brazil","A Mexican revolutionary leader","The founder of Argentina"]},
+      {q:"What was the Iranian Revolution of 1979?",                    a:["A revolution that overthrew the US-backed Shah and established an Islamic Republic under Ayatollah Khomeini","A pro-democracy revolution suppressed by the Iranian government","A civil war between Iranian nationalist factions","A coup staged by the Iranian military"]},
+      {q:"What was Pax Romana?",                                         a:["A roughly 200-year period of relative peace and stability across the Roman Empire (~27 BC – 180 AD)","A peace treaty between Rome and Carthage","A Roman religious festival celebrating peace","The period of Roman expansion into Gaul and Britain"]},
+      {q:"What was the significance of the 1954 Brown v. Board of Education ruling?", a:["The US Supreme Court unanimously declared racial segregation in public schools unconstitutional, overturning Plessy v. Ferguson","It gave African Americans the right to vote","It outlawed segregation in all public spaces","It ended Jim Crow laws across the South"]},
+      {q:"What was the Rwandan genocide (1994)?",                        a:["The mass murder of approximately 800,000 ethnic Tutsi and moderate Hutu by the Hutu-led government in just 100 days","A civil war between Rwanda and Burundi","A famine caused by drought and ethnic conflict","A conflict between Rwanda and the Democratic Republic of Congo"]},
+      {q:"Who was Otto von Bismarck and what was his main achievement?", a:["Prussian statesman who united the German states into a single German Empire in 1871","The first Chancellor of Austria-Hungary","A Prussian general who defeated Napoleon at Waterloo","The founder of the German Democratic Republic"]},
+      {q:"What was the significance of the Yalta Conference (1945)?",    a:["FDR, Churchill, and Stalin agreed on post-WWII European borders and spheres of influence — laying the groundwork for the Cold War","It was the signing of Germany's surrender in WWII","It established the United Nations","It agreed the terms of the atomic bomb use on Japan"]},
+      {q:"What was the Opium War between Britain and China?",            a:["A conflict (1839–42) Britain fought to maintain the right to sell opium in China, resulting in Hong Kong's cession to Britain","A war over trade routes through the Indian Ocean","A British attempt to colonise China","A conflict over the trade of silk and spices"]},
+      {q:"What was the significance of D-Day, June 6, 1944?",           a:["The largest seaborne invasion in history — Allied forces landed in Normandy, France, opening a Western Front that led to Germany's defeat","The final Allied victory over Germany","The liberation of Paris","The first Allied offensive against Nazi-occupied Europe"]},
     ],
     hard: [
       {q:"Which treaty officially ended World War I?",                 a:["Treaty of Versailles","Treaty of Paris","Treaty of Utrecht","Treaty of Brest-Litovsk"]},
@@ -2074,6 +2259,20 @@ const QUESTIONS = {
       {q:"Who was Byzantine Emperor when Constantinople fell in 1453?", a:["Constantine XI","Justinian I","Basil II","Alexios I"]},
       {q:"What was the significance of the Battle of Thermopylae (480 BC)?", a:["A small Greek force held off a massive Persian army, buying time for Greece","It was the decisive Greek victory over Persia","It marked the end of the Persian Wars","It was the first battle involving multiple Greek city-states"]},
       {q:"What was the Haitian Revolution's most significant long-term outcome?", a:["Haiti became the first Black republic and the first nation to permanently abolish slavery through revolt","France lost its most profitable colony","Napoleon abandoned his plans for an American empire","The slave trade was banned across the Caribbean"]},
+      {q:"What was the significance of the Bretton Woods Agreement (1944)?",a:["It established the post-WWII international monetary system — pegging currencies to the US dollar and creating the IMF and World Bank","It divided Germany into East and West occupation zones","It created the United Nations Security Council structure","It set the terms of Germany's post-war reparations"]},
+      {q:"What was the Khmer Rouge's most notorious act?",               a:["The Cambodian genocide (1975–79) in which Pol Pot's regime killed an estimated 1.5–2 million people — roughly 25% of Cambodia's population","The bombing of Phnom Penh during the Vietnam War","The forced expulsion of ethnic Vietnamese from Cambodia","A coup that overthrew the Cambodian monarchy"]},
+      {q:"What was the 'Scramble for Africa' and when did it occur?",    a:["Rapid European colonisation of nearly all of Africa between 1881 and 1914, formalised at the Berlin Conference","A series of African independence movements in the 1950s","Trade conflicts between European powers over African ivory and gold","Wars between African kingdoms resisting Ottoman expansion"]},
+      {q:"What was the significance of the Nuremberg Trials (1945–46)?", a:["The first international tribunal to hold individuals criminally accountable for war crimes and crimes against humanity, establishing key precedents in international law","The formal peace negotiations after WWII","The trial that convicted Germany of starting WWI","The process by which Germany was divided into East and West"]},
+      {q:"Who was Tamerlane (Timur) and what was his historical significance?", a:["A 14th-century Turco-Mongol conqueror who built a vast Central Asian empire through brutal military campaigns, killing millions","The founder of the Mughal Empire in India","A successor of Genghis Khan who ruled the Golden Horde","The first Muslim ruler of Persia"]},
+      {q:"What was the significance of the 1917 Balfour Declaration?",   a:["Britain stated its support for a Jewish homeland in Palestine, a key document in the eventual creation of Israel","Britain formally ended the Ottoman Empire's control of Palestine","The League of Nations granted Britain a mandate over Palestine","Britain recognised the Zionist Organisation as the representative of Jewish people"]},
+      {q:"What caused the Bronze Age Collapse (~1200 BC)?",              a:["A combination of invasions, earthquakes, drought, and systems collapse destroyed nearly all major civilisations in the Eastern Mediterranean simultaneously — still debated by historians","A single catastrophic volcanic eruption","A massive famine caused by crop failure","A plague that spread along trade routes"]},
+      {q:"What was the significance of the Long March (1934–35)?",       a:["A 9,000-km strategic retreat by Mao's Red Army that became foundational to Communist Party of China mythology and helped Mao consolidate leadership","A forced migration of Chinese peasants to new agricultural zones","A Japanese military advance through China","A diplomatic mission through Central Asia"]},
+      {q:"What was the Partition of India (1947)?",                      a:["The British-led division of British India into two independent nations — India and Pakistan — causing mass migration of 10–20 million people and roughly 200,000–2 million deaths","The peaceful transfer of power from Britain to India","The creation of Bangladesh from East Pakistan","The separation of Burma from British India"]},
+      {q:"What was the historical significance of Genghis Khan?",        a:["He united the Mongol tribes and created the largest contiguous land empire in history, connecting East Asia to Eastern Europe through trade and conquest","He was the first ruler to use gunpowder in warfare","He established the Silk Road trade network","He founded the city of Beijing"]},
+      {q:"What was the Dreyfus Affair?",                                 a:["A French political scandal (1894–1906) in which a Jewish army officer was falsely convicted of treason, exposing deep antisemitism and dividing France","A conspiracy to overthrow the French Third Republic","A corruption scandal involving Napoleon III","A series of strikes that led to French labour law reforms"]},
+      {q:"What was the significance of the Edict of Milan (313 AD)?",    a:["Emperor Constantine declared religious tolerance throughout the Roman Empire, effectively legalising Christianity and ending its persecution","Christianity was declared the official religion of the Roman Empire","Roman Emperor Diocletian ended his persecution of Christians","The Pope was granted authority over the Western Roman Empire"]},
+      {q:"What was the 'Reconquista' in Spanish history?",               a:["The centuries-long (718–1492) Christian reconquest of the Iberian Peninsula from Muslim Moorish rulers, culminating the same year Columbus reached the Americas","A Spanish military campaign to control Mediterranean trade routes","The expulsion of the Jews from Spain in 1492","The conquest of the Aztec Empire by Spanish conquistadors"]},
+      {q:"What was the significance of the Stonewall Riots (1969)?",     a:["A series of spontaneous demonstrations by LGBTQ+ patrons of the Stonewall Inn in NYC that became a catalyst for the modern LGBTQ+ rights movement","The first successful US Supreme Court ruling protecting LGBTQ+ rights","A protest that led directly to the repeal of sodomy laws in the US","The event that founded the Human Rights Campaign"]},
     ],
   },
 
@@ -2099,6 +2298,25 @@ const QUESTIONS = {
       {q:"Which Disney princess has a magic carpet?",                 a:["Jasmine","Cinderella","Belle","Ariel"]},
       {q:"What color is Luke Skywalker's lightsaber in the original Star Wars trilogy?", a:["Blue (then green)","Red","Purple","Yellow"]},
       {q:"What is the name of the toy store in 'Toy Story'?",         a:["Al's Toy Barn","Pizza Planet","Sunnyside Daycare","Andy's Room"]},
+      {q:"Which actor plays Thor in the Marvel Cinematic Universe?",     a:["Chris Hemsworth","Chris Evans","Chris Pratt","Tom Hiddleston"]},
+      {q:"What is the name of the ocean in 'Moana'?",                   a:["The Pacific Ocean","The Indian Ocean","The Atlantic Ocean","The Southern Ocean"]},
+      {q:"Who is the villain in 'Despicable Me'?",                       a:["Vector (in the first film)","Gru","El Macho","The Minions"]},
+      {q:"What studio produced the Shrek films?",                        a:["DreamWorks","Pixar","Disney","Universal"]},
+      {q:"Which superhero is known as 'the Caped Crusader'?",            a:["Batman","Superman","The Flash","Green Lantern"]},
+      {q:"What is the name of Simba's father in The Lion King?",         a:["Mufasa","Scar","Rafiki","Timon"]},
+      {q:"Which movie features the quote 'Just keep swimming'?",         a:["Finding Nemo","Finding Dory","The Little Mermaid","Moana"]},
+      {q:"Who plays Captain America in the MCU?",                        a:["Chris Evans","Chris Hemsworth","Robert Downey Jr.","Mark Ruffalo"]},
+      {q:"What is the name of the magical school in Harry Potter?",      a:["Hogwarts","Beauxbatons","Durmstrang","Ilvermorny"]},
+      {q:"What movie franchise features the character Jack Sparrow?",    a:["Pirates of the Caribbean","Treasure Island","The Mummy","Master and Commander"]},
+      {q:"In 'Up', what does Carl use to make his house fly?",            a:["Thousands of helium balloons","A rocket engine","A giant fan","Hot air burners"]},
+      {q:"What is the highest-grossing Pixar movie of all time?",        a:["Incredibles 2","Toy Story 4","Finding Dory","The Lion King (remake)"]},
+      {q:"Who provides the voice of Simba in the original 1994 Lion King?", a:["Matthew Broderick","Jonathan Taylor Thomas (young Simba)","James Earl Jones","Jeremy Irons"]},
+      {q:"What is the setting of the Disney film 'Coco'?",               a:["Mexico (the Land of the Dead inspired by Día de Muertos)","Spain","Brazil","Guatemala"]},
+      {q:"In which film does a fish named Marlin search the ocean for his son?", a:["Finding Nemo","The Little Mermaid","Shark Tale","Finding Dory"]},
+      {q:"Who voices Buzz Lightyear in the original Toy Story?",         a:["Tim Allen","Tom Hanks","Jim Carrey","Robin Williams"]},
+      {q:"What is the name of the evil witch in 'Snow White'?",          a:["The Evil Queen","Maleficent","Ursula","Cruella de Vil"]},
+      {q:"What animated movie features a robot named WALL-E?",           a:["WALL-E","Big Hero 6","Robots","The Iron Giant"]},
+      {q:"What sport does the main character play in 'Bend It Like Beckham'?", a:["Soccer (football)","Basketball","Cricket","Rugby"]},
     ],
     medium: [
       {q:"Who directed Jurassic Park?",                                a:["Steven Spielberg","James Cameron","George Lucas","Peter Jackson"]},
@@ -2121,6 +2339,25 @@ const QUESTIONS = {
       {q:"What year was 'The Shawshank Redemption' released?",        a:["1994","1992","1996","1998"]},
       {q:"What year was the first Pirates of the Caribbean film released?", a:["2003","2001","2005","2002"]},
       {q:"What is the subtitle of the second Avengers film?",         a:["Age of Ultron","Infinity War","Endgame","Civil War"]},
+      {q:"Who directed 'Oppenheimer' (2023)?",                           a:["Christopher Nolan","Denis Villeneuve","David Fincher","Ridley Scott"]},
+      {q:"What film broke box office records in 2023 alongside 'Oppenheimer' in 'Barbenheimer'?", a:["Barbie","Mission: Impossible – Dead Reckoning","Indiana Jones and the Dial of Destiny","The Flash"]},
+      {q:"Who plays Thanos in the Avengers films?",                      a:["Josh Brolin","Dave Bautista","Ron Perlman","Dwayne Johnson"]},
+      {q:"Which streaming platform produces 'The Crown'?",               a:["Netflix","HBO","Amazon Prime","Apple TV+"]},
+      {q:"What is the name of the fictional kingdom in 'Black Panther'?", a:["Wakanda","Zamunda","Genovia","Latveria"]},
+      {q:"Who directed the 'Dune' (2021) film adaptation?",             a:["Denis Villeneuve","Christopher Nolan","Ridley Scott","Peter Jackson"]},
+      {q:"In 'Squid Game', what country does the show originate from?", a:["South Korea","Japan","China","Thailand"]},
+      {q:"Who won the Academy Award for Best Actress for 'Monster' (2003)?", a:["Charlize Theron","Halle Berry","Nicole Kidman","Cate Blanchett"]},
+      {q:"Which director made 'Get Out' (2017)?",                       a:["Jordan Peele","Spike Lee","John Singleton","Barry Jenkins"]},
+      {q:"Which film is set in the fictional town of Hawkins, Indiana?", a:["Stranger Things (TV series)","Stand By Me","IT","Super 8"]},
+      {q:"Who directed 'Parasite', the first non-English film to win Best Picture?", a:["Bong Joon-ho","Park Chan-wook","Lee Chang-dong","Kim Ki-duk"]},
+      {q:"What year was 'Parasite' released?",                          a:["2019","2017","2021","2018"]},
+      {q:"Who plays the lead in 'Everything Everywhere All at Once' (2022)?", a:["Michelle Yeoh","Sandra Oh","Lucy Liu","Constance Wu"]},
+      {q:"Which MCU film introduced the multiverse concept prominently?", a:["Spider-Man: No Way Home","Avengers: Endgame","Doctor Strange","Loki (TV series)"]},
+      {q:"Who directed 'The Godfather Part II'?",                       a:["Francis Ford Coppola","Martin Scorsese","Brian De Palma","Sidney Lumet"]},
+      {q:"What was the first film to gross over $1 billion at the box office?", a:["Jurassic Park (1993)","Titanic (1997)","Jaws (1975)","Star Wars (1977)"]},
+      {q:"What is the name of the fictional shark in 'Jaws'?",           a:["Bruce","Jaws","Chomper","Great White"]},
+      {q:"Who directed 'Schindler's List'?",                            a:["Steven Spielberg","Stanley Kubrick","Roman Polanski","Martin Scorsese"]},
+      {q:"In which film does Joaquin Phoenix play the Joker's origin story?", a:["Joker (2019)","Batman v Superman","Suicide Squad","The Dark Knight Rises"]},
     ],
     hard: [
       {q:"Which 1960 Hitchcock film features the iconic shower scene?",a:["Psycho","Vertigo","Rear Window","The Birds"]},
@@ -2143,6 +2380,20 @@ const QUESTIONS = {
       {q:"What Kubrick film is based on the novel 'The Luck of Barry Lyndon'?", a:["Barry Lyndon","Full Metal Jacket","Lolita","Eyes Wide Shut"]},
       {q:"In 'Memento', what makes the film's structure unique?",      a:["Scenes play in reverse chronological order","It's entirely in black and white","Every scene is a dream sequence","All dialogue is delivered in voiceover"]},
       {q:"Who won the Academy Award for Best Actress for the very first time in history?", a:["Janet Gaynor","Mary Pickford","Clara Bow","Gloria Swanson"]},
+      {q:"What Kubrick film used the 'one-point perspective' style most famously?", a:["The Shining","2001: A Space Odyssey","A Clockwork Orange","Full Metal Jacket"]},
+      {q:"What is 'the fourth wall' in filmmaking?",                    a:["When a character addresses the audience directly, breaking the fictional illusion","The fourth act of a film's structure","The rear projection screen used on studio sets","A Brechtian editing technique"]},
+      {q:"Which film won the Palme d'Or at Cannes AND the Academy Award for Best Picture?", a:["Parasite (2019)","Amour (2012)","The Tree of Life (2011)","Fahrenheit 9/11 (2004)"]},
+      {q:"Who played Amy Dunne in 'Gone Girl' (2014)?",                 a:["Rosamund Pike","Carey Mulligan","Emily Blunt","Cate Blanchett"]},
+      {q:"What is the longest film to win the Academy Award for Best Picture?", a:["Ben-Hur (1959, 212 minutes)","Gone with the Wind (1939, 238 minutes)","Schindler's List (195 minutes)","Lawrence of Arabia (1962, 228 minutes)"]},
+      {q:"In which Coen Brothers film does a character famously say 'The Dude abides'?", a:["The Big Lebowski","Fargo","No Country for Old Men","Burn After Reading"]},
+      {q:"What technique did Terrence Malick use extensively in 'The Tree of Life'?", a:["Non-linear, impressionistic editing with voice-over narration and natural light","Extreme close-up photography","Long unbroken takes","Black-and-white cinematography"]},
+      {q:"Who composed the score for 'Schindler's List'?",              a:["John Williams","Hans Zimmer","Ennio Morricone","Bernard Herrmann"]},
+      {q:"What film introduced the 'bullet time' visual effect?",        a:["The Matrix (1999)","The Crow (1994)","Blade (1998)","Strange Days (1995)"]},
+      {q:"What Wes Anderson film uses a fictional 1930s European hotel as its setting?", a:["The Grand Budapest Hotel","The French Dispatch","Moonrise Kingdom","Fantastic Mr. Fox"]},
+      {q:"Which director made 'There Will Be Blood' (2007)?",           a:["Paul Thomas Anderson","David Fincher","Joel Coen","Alexander Payne"]},
+      {q:"What is the significance of the ending of 'The Sopranos' final episode?", a:["An abrupt cut to black leaves Tony Soprano's fate deliberately ambiguous","Tony is shot and killed on screen","Tony turns himself in to the FBI","The family goes into witness protection"]},
+      {q:"In 'Chinatown' (1974), who plays private detective J.J. Gittes?", a:["Jack Nicholson","Gene Hackman","Al Pacino","Dustin Hoffman"]},
+      {q:"What was the first film directed by a woman to win the Academy Award for Best Director?", a:["Nomadland (2021, Chloé Zhao)","The Hurt Locker (2010, Kathryn Bigelow)","Lady Bird (2018, Greta Gerwig)","Lost in Translation (2004, Sofia Coppola)"]},
     ],
   },
 
@@ -2168,6 +2419,25 @@ const QUESTIONS = {
       {q:"How many players are on a soccer team on the field?",       a:["11","9","10","12"]},
       {q:"Which sport has a 'pin' as a target?",                      a:["Bowling","Darts","Archery","Curling"]},
       {q:"What is the term for scoring three consecutive strikes in bowling?", a:["Turkey","Hat trick","Three-bagger","Strike-out"]},
+      {q:"How many points is a three-pointer worth in basketball?",       a:["3","2","4","1"]},
+      {q:"What country invented baseball?",                               a:["United States","Canada","Cuba","United Kingdom"]},
+      {q:"How many players are on a baseball team's field at once?",      a:["9","10","8","11"]},
+      {q:"Which country hosts the Tour de France cycling race?",          a:["France","Italy","Spain","Belgium"]},
+      {q:"What sport is played at the US Open tennis tournament?",        a:["Tennis","Golf","Polo","Squash"]},
+      {q:"What is the term for a score of one under par in golf?",        a:["Birdie","Eagle","Bogey","Par"]},
+      {q:"In American football, how many points is a safety worth?",      a:["2","3","6","1"]},
+      {q:"What sport do the New York Yankees play?",                      a:["Baseball","Basketball","American football","Ice hockey"]},
+      {q:"How high is a regulation basketball hoop from the floor?",      a:["10 feet (3.05 m)","9 feet","11 feet","8 feet"]},
+      {q:"What is the Olympic motto?",                                    a:["Faster, Higher, Stronger — Together","Courage, Excellence, Respect","Fair Play, Progress, Friendship","Win, Compete, Achieve"]},
+      {q:"What country won the FIFA World Cup in 2022?",                  a:["Argentina","France","Brazil","Croatia"]},
+      {q:"In which sport do athletes compete in the Tour de France?",     a:["Cycling","Triathlon","Running","Swimming"]},
+      {q:"How long is an Olympic-size swimming pool?",                    a:["50 metres","25 metres","100 metres","75 metres"]},
+      {q:"What is the playing surface of Wimbledon made of?",             a:["Grass","Clay","Hard court","Artificial turf"]},
+      {q:"What sport is LeBron James famous for?",                        a:["Basketball","Football","Baseball","Soccer"]},
+      {q:"Which country won the most gold medals at the 2024 Paris Olympics?", a:["United States","China","Australia","Great Britain"]},
+      {q:"How many periods are in a regulation NHL hockey game?",         a:["3","2","4","5"]},
+      {q:"What is the maximum weight in boxing's heavyweight division?",  a:["No upper limit (heavyweights have no maximum weight)","200 lbs","220 lbs","215 lbs"]},
+      {q:"In soccer, what does a red card mean?",                         a:["The player is immediately sent off the field","The player receives a warning","The player must sit out for 10 minutes","The team is penalised a free kick"]},
     ],
     medium: [
       {q:"How many Grand Slam tennis tournaments are there per year?", a:["4","3","5","2"]},
@@ -2190,6 +2460,25 @@ const QUESTIONS = {
       {q:"How many points is a try worth in rugby union?",            a:["5","4","6","3"]},
       {q:"What is the term for a score of one over par in golf?",     a:["Bogey","Birdie","Eagle","Par"]},
       {q:"What is the length of an Olympic marathon course?",         a:["42.195 km","40 km","45 km","26 miles exactly"]},
+      {q:"What is Lionel Messi's home country?",                         a:["Argentina","Spain","Brazil","Uruguay"]},
+      {q:"Which country has won the most Rugby World Cup titles?",        a:["New Zealand (All Blacks)","South Africa","Australia","England"]},
+      {q:"In Formula 1, what does a yellow flag indicate?",              a:["Danger ahead — no overtaking","Race paused or stopped","Car entering pit lane","Race leader is approaching"]},
+      {q:"Which athlete won 23 Grand Slam singles titles in tennis?",    a:["Serena Williams","Steffi Graf","Martina Navratilova","Margaret Court"]},
+      {q:"What is a 'grand slam' in baseball?",                          a:["A home run hit with the bases loaded, scoring 4 runs","Hitting for the cycle in one game","Winning all games in a series","Three home runs in a single game"]},
+      {q:"In which sport do competitors perform manoeuvres on a halfpipe?", a:["Snowboarding / skateboarding","Skiing","BMX Freestyle","Gymnastics"]},
+      {q:"What is the 'offside rule' in soccer?",                        a:["An attacker cannot be closer to the opponent's goal than the ball AND the second-to-last defender when a pass is played to them","Players cannot cross the halfway line before the ball","Attackers must stay behind a designated line until the goal kick","No player can stand in the opponent's penalty box"]},
+      {q:"Who holds the record for most international goals in men's football?",  a:["Cristiano Ronaldo","Lionel Messi","Ali Daei","Pele"]},
+      {q:"What is the 'butterfly stroke' in swimming?",                  a:["A stroke where both arms move simultaneously in a windmill motion while legs do a dolphin kick","A stroke where alternate arms pull and legs do a flutter kick","A backstroke variant with simultaneous arm pulls","An underwater breaststroke technique"]},
+      {q:"How many players are on each team in American football?",      a:["11","9","12","10"]},
+      {q:"In tennis, what is a 'love' score?",                           a:["Zero — no points scored","A perfect serve","A service winner","The first point of the set"]},
+      {q:"What is the NBA record for most points scored in a single game?", a:["100 — Wilt Chamberlain (1962)","81 — Kobe Bryant (2006)","73 — Michael Jordan (1993)","92 — Kobe Bryant (2002)"]},
+      {q:"In cricket, what is a 'wicket maiden'?",                       a:["An over in which no runs are scored AND at least one wicket is taken","An over with no runs scored","A wicket taken off the first ball of an over","When a batsman is dismissed without scoring"]},
+      {q:"Which country has won the most Olympic gold medals in all-time history?", a:["United States","Soviet Union","China","Great Britain"]},
+      {q:"What year did Tiger Woods win his first Masters golf title?",   a:["1997","1995","2001","1999"]},
+      {q:"What is a 'double-double' in basketball?",                     a:["Achieving double digits in two statistical categories in one game (e.g., points and rebounds)","Scoring 20+ points in both halves","Making two consecutive three-pointers","A two-game winning streak"]},
+      {q:"In which sport does the winner earn the 'yellow jersey'?",     a:["Tour de France cycling","Tour de France triathlon","A stage of the Giro d'Italia","Le Mans auto racing"]},
+      {q:"What is 'match play' in golf?",                                a:["A format where players compete hole-by-hole, with each hole won by fewest strokes","Stroke play where total strokes over the round decide the winner","Playing golf against a set time limit","A format where handicap is deducted from total score"]},
+      {q:"What is the highest score possible in a single frame of bowling?",a:["30 — three strikes in a row","10 — one strike","20 — two strikes","27 — three strikes with max pins"]},
     ],
     hard: [
       {q:"What is the diameter of a regulation NBA basketball hoop?",  a:["18 inches","16 inches","20 inches","15 inches"]},
@@ -2212,6 +2501,20 @@ const QUESTIONS = {
       {q:"Which swimmer has won the most total Olympic medals (combined)?", a:["Michael Phelps (28 medals)","Mark Spitz","Ryan Lochte","Natalie Coughlin"]},
       {q:"What is the maximum number of clubs a golfer may carry in a tournament round?", a:["14","12","16","10"]},
       {q:"In which sport does the winner of 'The Ashes' series compete?", a:["Cricket (England vs Australia)","Rugby","Field Hockey","Tennis"]},
+      {q:"In F1, what is the DRS zone?",                                  a:["A section of track where the Drag Reduction System (rear wing open) is permitted to aid overtaking","A pit lane entry zone where speed is unrestricted","A section where tire changes are mandatory","A zone where safety car rules apply"]},
+      {q:"What is the 'Elo rating system' used for in sports?",           a:["Quantifying relative skill levels of players or teams, originally developed for chess","Measuring athletic performance in Olympic events","Ranking teams by points and goal difference","Predicting injury risk from workload data"]},
+      {q:"What is the 'Pythagorean expectation' in baseball analytics?",  a:["A formula estimating a team's win% from runs scored vs. runs allowed, inspired by the Pythagorean theorem","The expected batting average based on contact quality","A method to predict home run output from swing speed","A sabermetric formula for measuring fielding efficiency"]},
+      {q:"In the NFL, what is the 'two-minute warning'?",                 a:["An automatic timeout called when 2 minutes remain in each half","A rule requiring teams to snap the ball within 2 minutes","A signal that the quarterback has 2 minutes to select a play","A penalty for delaying the game in the final 2 minutes"]},
+      {q:"What is 'WAR' in baseball statistics?",                         a:["Wins Above Replacement — how many more wins a player generates vs. a replacement-level player","Weight Against Runs — a pitching efficiency metric","Win-to-At-bat Ratio — hitting performance measure","Weighted Average Rating — an all-around performance index"]},
+      {q:"In Olympic weightlifting, what are the two competition lifts?", a:["The snatch and the clean and jerk","The snatch and the deadlift","The clean and press and the clean and jerk","The squat and the snatch"]},
+      {q:"What is a 'chip shot' in soccer?",                              a:["Lifting the ball with a delicate lofted kick over a defender or goalkeeper","A low driven shot along the ground","A powerful shot with the side of the foot","A shot deflected off a defender"]},
+      {q:"In gymnastics, what is the 'difficulty score' (D-score)?",      a:["A score awarded for the technical difficulty of the elements performed, separate from the execution score","The total score before deductions","A judge's subjective rating of routine complexity","A bonus score for completing an optional element"]},
+      {q:"What does 'WHIP' measure in baseball pitching?",                a:["Walks plus Hits per Inning Pitched — measures how many baserunners a pitcher allows per inning","Win-Hit-Inning Percentage — overall pitching efficiency","Weighted Hit Index Position — a batting metric","Walks, Hits, and Intentional Pitches per game"]},
+      {q:"What is the difference between 'match play' and 'stroke play' in golf?", a:["Match play is hole-by-hole competition; stroke play totals all strokes over the round","Match play uses handicaps; stroke play does not","Stroke play ends at 9 holes; match play goes to 18","Match play is team-based; stroke play is individual"]},
+      {q:"What is the 'Grand Slam' in tennis — the four tournaments?",    a:["Australian Open, French Open (Roland Garros), Wimbledon, US Open","US Open, Australian Open, Canadian Open, Wimbledon","French Open, US Open, Wimbledon, Davis Cup","Australian Open, French Open, Wimbledon, ATP Finals"]},
+      {q:"In ice hockey, what is 'icing'?",                               a:["Shooting the puck from behind the centre line all the way to the opponent's end without it being touched — resulting in a faceoff in the defensive zone","A penalty for hitting the puck out of play","Shooting the puck over the boards into the crowd","A delayed penalty call where the penalised team still plays until the other team touches the puck"]},
+      {q:"What is a 'perfect game' in baseball?",                         a:["A pitcher retires all 27 batters faced (no hits, walks, or errors) — only 24 have been thrown in MLB history","A pitcher strikes out all 27 batters faced","A team wins 1–0 without any errors","A pitcher completes a shutout with fewer than 5 hits"]},
+      {q:"Who holds the record for most career touchdowns in NFL history?", a:["Jerry Rice (208 total TDs)","Tom Brady","Emmitt Smith","Randy Moss"]},
     ],
   },
 
@@ -2237,6 +2540,25 @@ const QUESTIONS = {
       {q:"What is the body of water between England and France called?", a:["The English Channel","The North Sea","The Atlantic Ocean","The Irish Sea"]},
       {q:"What is the longest mountain range in the world?",          a:["The Andes","The Himalayas","The Rockies","The Alps"]},
       {q:"Which country is home to the city of Sydney?",              a:["Australia","New Zealand","Canada","South Africa"]},
+      {q:"What is the capital of the United States?",                     a:["Washington, D.C.","New York City","Los Angeles","Chicago"]},
+      {q:"What is the capital of India?",                                 a:["New Delhi","Mumbai","Kolkata","Bangalore"]},
+      {q:"On which continent is the Sahara Desert?",                     a:["Africa","Asia","Australia","South America"]},
+      {q:"What is the capital of Brazil?",                               a:["Brasília","São Paulo","Rio de Janeiro","Salvador"]},
+      {q:"Which ocean lies between Europe/Africa and the Americas?",      a:["Atlantic Ocean","Pacific Ocean","Indian Ocean","Arctic Ocean"]},
+      {q:"What is the currency of Japan?",                               a:["Yen","Won","Ringgit","Baht"]},
+      {q:"How many continents are there on Earth?",                      a:["7","6","5","8"]},
+      {q:"What is the tallest mountain in the world?",                   a:["Mount Everest","K2","Kangchenjunga","Lhotse"]},
+      {q:"What country has the longest coastline in the world?",         a:["Canada","Russia","Australia","Norway"]},
+      {q:"What is the smallest continent by area?",                      a:["Australia / Oceania","Antarctica","Europe","South America"]},
+      {q:"Which country is both a continent and a country?",             a:["Australia","Greenland","Iceland","Madagascar"]},
+      {q:"What is the capital of Mexico?",                               a:["Mexico City","Guadalajara","Monterrey","Tijuana"]},
+      {q:"Which river runs through Egypt?",                              a:["The Nile","The Congo","The Zambezi","The Niger"]},
+      {q:"What is the currency of the European Union?",                  a:["Euro","Pound","Franc","Mark"]},
+      {q:"Which country has the most people as of 2024?",                a:["India","China","United States","Indonesia"]},
+      {q:"What is the largest city in Africa by population?",            a:["Lagos, Nigeria","Cairo, Egypt","Kinshasa, DR Congo","Johannesburg, South Africa"]},
+      {q:"In which country is the Amazon River primarily located?",      a:["Brazil","Peru","Colombia","Bolivia"]},
+      {q:"What is the capital of South Africa's legislative branch?",    a:["Cape Town","Pretoria","Johannesburg","Bloemfontein"]},
+      {q:"Which mountain range separates Europe from Asia?",             a:["The Ural Mountains","The Alps","The Caucasus","The Carpathians"]},
     ],
     medium: [
       {q:"What is the capital city of Canada?",                        a:["Ottawa","Toronto","Vancouver","Montreal"]},
@@ -2259,6 +2581,25 @@ const QUESTIONS = {
       {q:"Which ocean is the saltiest on average?",                   a:["Atlantic Ocean","Pacific Ocean","Indian Ocean","Arctic Ocean"]},
       {q:"What is the capital of Mexico?",                            a:["Mexico City","Guadalajara","Monterrey","Puebla"]},
       {q:"Which country contains the most of the Amazon River?",      a:["Brazil","Peru","Colombia","Venezuela"]},
+      {q:"What is the capital of Pakistan?",                             a:["Islamabad","Karachi","Lahore","Rawalpindi"]},
+      {q:"Which sea separates Europe from Africa at its narrowest point?", a:["The Mediterranean Sea (Strait of Gibraltar)","The Red Sea","The Black Sea","The Adriatic Sea"]},
+      {q:"What is the name of the world's largest island?",             a:["Greenland","Australia","New Guinea","Borneo"]},
+      {q:"What is the capital of Nigeria?",                              a:["Abuja","Lagos","Kano","Ibadan"]},
+      {q:"What is the longest river in South America?",                  a:["The Amazon","The Parana","The Orinoco","The Magdalena"]},
+      {q:"Which country has the most pyramids — more than even Egypt?", a:["Sudan (Nubian pyramids)","Mexico","Peru","China"]},
+      {q:"What is the capital of Turkey?",                               a:["Ankara","Istanbul","Izmir","Bursa"]},
+      {q:"What is the name of the strait connecting the Black Sea to the Mediterranean?", a:["The Bosphorus and Dardanelles","The Strait of Gibraltar","The Strait of Hormuz","The Strait of Malacca"]},
+      {q:"Which country has the largest proven oil reserves?",           a:["Venezuela","Saudi Arabia","Iran","Iraq"]},
+      {q:"What is the capital of Indonesia?",                            a:["Jakarta (being moved to Nusantara)","Bali","Surabaya","Bandung"]},
+      {q:"What is the name of the world's largest hot spring?",          a:["Grand Prismatic Spring (Yellowstone, USA)","Deildartunguhver (Iceland)","Frying Pan Lake (New Zealand)","Boiling Lake (Dominica)"]},
+      {q:"Which country spans the most time zones?",                     a:["France (12, including overseas territories)","Russia","United States","China"]},
+      {q:"What is the approximate population of the world as of 2024?",  a:["About 8.1 billion","About 7 billion","About 9 billion","About 10 billion"]},
+      {q:"Which country has the most UNESCO World Heritage Sites?",      a:["Italy","China","Spain","Germany"]},
+      {q:"What is the 'Fertile Crescent'?",                              a:["A region in the Middle East (Mesopotamia to the Nile) considered the cradle of civilization","A farming region in the Nile Delta only","The agricultural heartland of ancient China","A river valley system in the Indus region"]},
+      {q:"What is the deepest lake in the world?",                       a:["Lake Baikal, Russia","Lake Tanganyika","Caspian Sea","Lake Superior"]},
+      {q:"What is the capital of Saudi Arabia?",                         a:["Riyadh","Jeddah","Mecca","Medina"]},
+      {q:"What is the world's largest desert (including cold deserts)?", a:["Antarctica","Sahara","Arabian Desert","Arctic Desert"]},
+      {q:"In which country is the Atacama Desert — the driest non-polar desert?", a:["Chile","Peru","Bolivia","Argentina"]},
     ],
     hard: [
       {q:"Which African country has three capital cities?",            a:["South Africa","Nigeria","Ethiopia","Democratic Republic of Congo"]},
@@ -2281,6 +2622,20 @@ const QUESTIONS = {
       {q:"Which country has the most UNESCO World Heritage Sites?",   a:["Italy","China","Spain","Germany"]},
       {q:"What is the name of the world's largest coral reef system?",a:["Great Barrier Reef","Mesoamerican Reef","Coral Triangle","Red Sea Reef"]},
       {q:"What is a 'rain shadow' in geography?",                     a:["A dry region on the sheltered side of a mountain that blocks precipitation","A desert formed by distance from the ocean","A coastal fog that replaces rainfall","An area beneath a storm system with no rain"]},
+      {q:"What is the 'Mercator projection' and what is its main criticism?", a:["A cylindrical map projection that preserves direction but severely distorts size near the poles, making Greenland look as large as Africa","A projection that accurately represents land area at the cost of shape","A polar map projection that distorts distances","A satellite-based map that shows real terrain"]},
+      {q:"What is the 'ITCZ' (Intertropical Convergence Zone)?",         a:["A belt of low pressure near the equator where trade winds meet, producing heavy rainfall and tropical storms","The boundary between the tropics and subtropics","A system of persistent ocean currents around the equator","The zone where El Niño weather patterns originate"]},
+      {q:"What is the geographic term for a river that flows into a lake or larger river (not the sea)?", a:["Tributary","Distributary","Confluence","Estuary"]},
+      {q:"What is 'karst topography'?",                                  a:["A landscape formed from soluble rocks (limestone/dolomite) dissolved by water, creating sinkholes, caves, and underground rivers","A volcanic landscape with lava tubes and craters","A coastal landscape formed by glacial erosion","A desert landscape shaped by wind erosion"]},
+      {q:"What is the significance of the 'Tropic of Cancer'?",          a:["The northernmost latitude (23.5°N) where the sun is directly overhead at noon during the summer solstice","The boundary between the Northern and Southern Hemisphere","The line of latitude separating tropical and subtropical climates","The parallel marking the edge of the ozone hole"]},
+      {q:"What is the 'Coriolis effect'?",                               a:["The deflection of winds and ocean currents to the right in the Northern Hemisphere and left in the Southern due to Earth's rotation","The pull of gravity on moving air masses","The acceleration of winds around mountain ranges","The rotation of storm systems around low-pressure centres"]},
+      {q:"What is the difference between weather and climate?",           a:["Weather is short-term atmospheric conditions; climate is the long-term average pattern of weather in a region","Weather is local; climate is global","Weather is measured in days; climate in weeks","They are the same but measured at different altitudes"]},
+      {q:"What is the 'thermohaline circulation' (ocean conveyor belt)?",a:["A global system of ocean currents driven by differences in water temperature and salinity that regulates Earth's climate","Surface ocean currents driven by wind patterns","Tidal flows between the Atlantic and Pacific Oceans","Deep-sea convection caused by underwater volcanic activity"]},
+      {q:"Which country contains both the world's highest point (Everest) and shares the deepest ocean trench?", a:["No single country — Everest is in Nepal/China; the Mariana Trench is in international waters near Micronesia","Japan","Indonesia","Philippines"]},
+      {q:"What is the 'Sahel' region of Africa?",                        a:["A semi-arid transition zone between the Sahara Desert and wetter sub-Saharan Africa, stretching coast to coast","The fertile coastal strip of North Africa","A mountain range in central Africa","The equatorial rainforest belt of central Africa"]},
+      {q:"What caused the shrinking of the Aral Sea?",                   a:["Soviet-era irrigation projects diverted the rivers feeding it, reducing it to about 10% of its former size","Prolonged drought across Central Asia","Industrial pollution that caused the water to evaporate faster","Tectonic shifts that blocked its main tributary"]},
+      {q:"What is a 'fjord'?",                                            a:["A long, narrow, deep inlet carved by glaciers, typically with steep cliff sides, common in Norway","A coral reef lagoon enclosed by land","A type of desert canyon carved by ancient rivers","A mountain valley formed by volcanic activity"]},
+      {q:"What is the geographical significance of the Strait of Hormuz?", a:["~20% of the world's oil supply passes through it — the only sea passage from the Persian Gulf to the open ocean","The deepest navigable strait in the world","The boundary between the Atlantic and Indian Oceans","The narrowest international shipping lane in the world"]},
+      {q:"What is 'El Niño'?",                                            a:["A periodic warming of Pacific Ocean surface temperatures that disrupts global weather patterns, causing droughts, floods, and storms worldwide","A seasonal wind pattern in the Indian Ocean","A cold current off the coast of Peru","A tropical storm system in the western Pacific"]},
     ],
   },
 
@@ -2306,6 +2661,25 @@ const QUESTIONS = {
       {q:"What is a musical 'octave'?",                               a:["A span of 8 notes in a scale","A group of 8 musicians","An 8-bar phrase","A chord with 8 notes"]},
       {q:"Who is known as the 'King of the Blues'?",                  a:["B.B. King","Robert Johnson","Muddy Waters","Howlin' Wolf"]},
       {q:"What genre of music did Johnny Cash primarily perform?",    a:["Country","Blues","Rock and roll","Folk"]},
+      {q:"Which pop star is known as 'Bad Guy' and 'Happier Than Ever'?", a:["Billie Eilish","Olivia Rodrigo","Dua Lipa","Ariana Grande"]},
+      {q:"What instrument does a drummer play?",                          a:["Drums (percussion)","Bass guitar","Piano","Synthesizer"]},
+      {q:"Which group sang 'Shape of You'?",                             a:["Ed Sheeran (solo artist)","Maroon 5","Coldplay","The Weeknd"]},
+      {q:"How many strings does a standard violin have?",                a:["4","5","3","6"]},
+      {q:"Who sang 'Rolling in the Deep'?",                              a:["Adele","Beyoncé","Lady Gaga","Rihanna"]},
+      {q:"What does 'pop music' stand for?",                             a:["Popular music","Positive music","Portable music","Polyphonic music"]},
+      {q:"Which band performed 'Smells Like Teen Spirit'?",              a:["Nirvana","Pearl Jam","Soundgarden","Alice in Chains"]},
+      {q:"Who is Taylor Swift's most famous 'squad' associated with?",   a:["A group of celebrity friends she features in music videos and tours","Her backup dancers","Her songwriting team","Her record label's artist roster"]},
+      {q:"What is a music 'album'?",                                     a:["A collection of songs released together as a complete work","A single song released for airplay","A live concert recording","A playlist curated by a DJ"]},
+      {q:"Who sang 'Uptown Funk'?",                                      a:["Mark Ronson ft. Bruno Mars","Bruno Mars solo","Pharrell Williams","Justin Timberlake"]},
+      {q:"What does BTS stand for?",                                     a:["Bangtan Sonyeondan (Beyond the Scene)","Best Top Songs","Brilliant Teen Stars","Bright Top Singers"]},
+      {q:"Who is known as the 'Queen of Rap'?",                          a:["Nicki Minaj","Cardi B","Missy Elliott","Lauryn Hill"]},
+      {q:"Which instrument does Eric Clapton play?",                     a:["Guitar","Piano","Bass","Drums"]},
+      {q:"What music genre features beats, rhyming lyrics, and sampling?", a:["Hip-hop/rap","R&B","Electronic","Soul"]},
+      {q:"Who sang 'Shake It Off'?",                                     a:["Taylor Swift","Katy Perry","Miley Cyrus","Selena Gomez"]},
+      {q:"What country does K-pop come from?",                           a:["South Korea","Japan","China","Thailand"]},
+      {q:"Who is the lead singer of Coldplay?",                          a:["Chris Martin","Jonny Buckland","Guy Berryman","Will Champion"]},
+      {q:"What music award is considered the highest honour in the industry?", a:["Grammy Award","Billboard Music Award","MTV Video Music Award","Brit Award"]},
+      {q:"Which artist released 'Anti Hero' in 2022?",                   a:["Taylor Swift","Olivia Rodrigo","Billie Eilish","Lizzo"]},
     ],
     medium: [
       {q:"In what year was Michael Jackson's 'Thriller' album released?", a:["1982","1979","1985","1980"]},
@@ -2328,6 +2702,25 @@ const QUESTIONS = {
       {q:"Who sang 'Billie Jean'?",                                   a:["Michael Jackson","Prince","Stevie Wonder","Marvin Gaye"]},
       {q:"Which American music genre evolved from blues in the 1950s?", a:["Rock and roll","Jazz","Country","Gospel"]},
       {q:"What is a 'chord' in music?",                               a:["Three or more notes played simultaneously","A single sustained note","A musical phrase","A sequence of notes in a scale"]},
+      {q:"Which artist holds the record for the most-streamed song on Spotify?",a:["'Blinding Lights' by The Weeknd (as of 2024)","'Shape of You' by Ed Sheeran","'Dance Monkey' by Tones and I","'Bad Guy' by Billie Eilish"]},
+      {q:"What is the name of Beyoncé's 2022 dance/electronic album?",   a:["Renaissance","Lemonade","4","Cowboy Carter"]},
+      {q:"How many octaves does a standard full piano span?",            a:["7 octaves plus a minor third (88 keys)","5 octaves","8 octaves","6 octaves"]},
+      {q:"What rapper collaborated with Jay-Z to form 'The Carters'?",   a:["Beyoncé","Rihanna","Cardi B","Nicki Minaj"]},
+      {q:"What is a 'bridge' in a pop song?",                            a:["A contrasting section that provides a break from the verse-chorus pattern, usually appearing once","The opening bars of a song","The instrumental section in the middle of a song","The final repetition of the chorus"]},
+      {q:"What Taylor Swift album was released in two parts in 2023?",   a:["The Tortured Poets Department (2024, released in parts)","Midnights","Folklore","Speak Now (Taylor's Version)"]},
+      {q:"What is the 'Nashville Number System'?",                       a:["A method of transcribing music using numbers for chords instead of letter names — widely used in country music session work","A ranking system for country music chart success","A system for numbering guitar frets","A tempo notation system unique to country music"]},
+      {q:"Which composer wrote 'The Marriage of Figaro'?",               a:["Wolfgang Amadeus Mozart","Franz Joseph Haydn","Ludwig van Beethoven","Gioachino Rossini"]},
+      {q:"What is 'sampling' in music production?",                      a:["Taking a portion of a recorded sound and reusing it in a new composition — foundational in hip-hop","Recording live instruments over a drum machine","Mixing multiple audio signals together","Testing a song with focus groups before release"]},
+      {q:"Which Kendrick Lamar song won the 2024 Pulitzer Prize for Music?", a:["No Kendrick song won a Pulitzer — but 'DAMN.' (2018) was the first rap album to win one","'Not Like Us'","'Humble'","'Money Trees'"]},
+      {q:"What is the tempo marking 'largo' in classical music?",        a:["Very slow and broad","Moderately slow","Fast and lively","At a walking pace"]},
+      {q:"What musical movement preceded punk rock in the 1970s?",       a:["Glam rock and prog rock — punk reacted against their excesses","Folk rock","Heavy metal","Disco — punk was a direct reaction to its commercialism"]},
+      {q:"What is the 'Amen break'?",                                    a:["A 6-second drum break from the 1969 song 'Amen Brother' — one of the most sampled recordings in history, foundational to jungle, drum and bass, and hip-hop","The final cadence in a classical mass composition","A famous guitar riff by Jimi Hendrix","A drum fill used in nearly every Led Zeppelin song"]},
+      {q:"In music theory, what is a 'diminished seventh chord'?",       a:["A chord consisting of four notes each a minor third apart, creating a symmetrical, tense sound","A seventh chord with a flattened fifth","A major chord with an added seventh","A chord resolving downward by a seventh interval"]},
+      {q:"What streaming platform paid the most to artists per stream in 2023?", a:["Tidal (followed closely by Apple Music)","Spotify","YouTube Music","Amazon Music"]},
+      {q:"What is the difference between 'timbre' and 'tone' in music?", a:["Timbre is the unique sound quality of an instrument; tone refers to pitch (the musical note)","They are synonyms for the same concept","Timbre is pitch; tone is volume","Tone refers to timbre in classical music; timbre is a modern term"]},
+      {q:"Who composed the opera 'The Magic Flute'?",                    a:["Mozart","Beethoven","Verdi","Handel"]},
+      {q:"What is 'pitch correction' software (e.g., Auto-Tune)?",       a:["Software that adjusts vocal or instrumental pitch to be in tune — used subtly for correction or overtly as an artistic effect","A device that amplifies quiet vocals","Software that removes background noise","A system that transposes a recording to a different key"]},
+      {q:"What is the 'Nashville Number System' used for?",              a:["Communicating chord progressions using numbers so musicians can play in any key without sheet music","Recording contracts between artists and labels","Ranking songs on the Billboard country chart","Cataloguing studio session recordings"]},
     ],
     hard: [
       {q:"What unusual time signature is 'Money' by Pink Floyd written in?", a:["7/4","4/4","5/4","6/8"]},
@@ -2350,6 +2743,20 @@ const QUESTIONS = {
       {q:"What is a 'Picardy third' in music?",                      a:["Ending a minor-key piece with a major chord","A triple-time rhythm named after a French region","A specific piano fingering technique","A Baroque tuning system"]},
       {q:"What is the circle of fifths used for in music theory?",   a:["Organizing all 12 major and minor keys by their relationships","Counting the number of sharps and flats in a piece","Determining the tempo of a composition","Mapping chords to their inversions"]},
       {q:"Which composer wrote the 'Goldberg Variations'?",          a:["Johann Sebastian Bach","George Frideric Handel","Wolfgang Mozart","Franz Schubert"]},
+      {q:"What is 'spectral music' in contemporary classical composition?", a:["Music composed using the acoustic properties and overtone series of sounds as its harmonic basis","Music written for instruments with an extremely wide dynamic range","A style using only electronic spectrographs to create notation","Minimalist music built entirely from repetition of a single tone"]},
+      {q:"What is the 'tritone' and why was it historically called 'diabolus in musica'?", a:["An interval of three whole tones (augmented fourth/diminished fifth) with a dissonant, unstable quality — medieval theorists banned it as 'the devil in music'","A chord using only the notes of a diminished triad","A scale that avoids all semitones","A double-stop technique on stringed instruments"]},
+      {q:"Who were 'The Second Viennese School'?",                      a:["Schoenberg, Berg, and Webern — pioneers of atonality and twelve-tone serialism in early 20th-century Vienna","Haydn, Mozart, and Beethoven — the Classical Viennese masters","A group of Romantic composers who succeeded Brahms and Bruckner","Post-war composers who revived Viennese waltz tradition"]},
+      {q:"What is 'musique concrète' and who pioneered it?",            a:["Music composed from recorded real-world and electronic sounds, pioneered by Pierre Schaeffer in Paris in 1948","A minimalist style using only acoustic concrete instruments","Music scored for instruments playing in concrete-walled spaces","An early form of sampling developed by Brian Eno"]},
+      {q:"What makes Beethoven's 'Hammerklavier' Sonata (Op. 106) technically significant?", a:["At ~45 minutes it is the longest and most technically demanding of Beethoven's 32 sonatas, including a fugue many consider unplayable at its marked tempo","It was the first piano sonata written in a minor key","It introduced the sostenuto pedal technique to classical piano","It was the first large-scale sonata written for a modern iron-frame piano"]},
+      {q:"What is 'extended technique' in contemporary music?",          a:["Non-standard ways of playing an instrument beyond its conventional use — e.g., col legno (bowing with wood), prepared piano, multiphonics in winds","Techniques requiring unusually large hand span on piano","Playing music at extremes of tempo or dynamics","Techniques developed after 1950 requiring electronic amplification"]},
+      {q:"What harmonic concept did Debussy develop that influenced jazz?", a:["Whole-tone and pentatonic scales, parallel chord motion, and modal harmony that dissolved traditional tonal resolution — directly influencing jazz chord voicings","The use of the tritone as a stable harmonic element","Polytonality — layering two different keys simultaneously","Microtonality — dividing octaves into more than 12 semitones"]},
+      {q:"What is the 'prepared piano' technique invented by John Cage?", a:["Placing objects (bolts, screws, rubber) on and between piano strings to alter its timbre, creating percussive and metallic sounds","Playing the piano strings directly with the fingers rather than keys","Tuning specific strings to quarter tones","Recording piano notes and playing them back altered"]},
+      {q:"What is the 'Köchel catalogue' in music?",                    a:["The chronological catalogue of Mozart's works, compiled by Ludwig von Köchel in 1862 — the source of 'K.' numbers like K. 331","A catalogue of lost medieval manuscripts","The complete works catalogue of Johann Sebastian Bach","A comprehensive index of Baroque keyboard compositions"]},
+      {q:"Who composed 'Rhapsody in Blue' and what makes it historically significant?", a:["George Gershwin (1924) — it was a groundbreaking fusion of jazz harmonies and rhythms with classical orchestra form","Scott Joplin — his first crossover classical work","Duke Ellington — blending swing and symphonic form","Aaron Copland — incorporating folk music into a concerto form"]},
+      {q:"What is 'sprechgesang' (Sprechstimme) in vocal music?",       a:["A vocal technique between speech and singing used by Schoenberg in which pitch is approximated but immediately falls or rises away — heard in Pierrot Lunaire","Singing text in a rapid, speech-like rhythm at full pitch","A Baroque recitative style for dramatic clarity","An operatic technique for projecting speech over orchestra without a microphone"]},
+      {q:"What is the difference between a 'sonata' and a 'symphony'?", a:["A sonata is typically for one or two instruments (with piano); a symphony is a large-scale work for full orchestra, usually in four movements","A symphony is a sonata performed by an orchestra","A sonata has three movements; a symphony has four","They are identical in form but differ in instrumentation and scale"]},
+      {q:"What was the '27 Club'?",                                      a:["A group of iconic musicians who all died at age 27, including Hendrix, Joplin, Morrison, Cobain, and Winehouse","A late-night jazz club in New York where 27 legendary musicians first performed","A record label founded in 1927 that launched rock and roll","A loose collective of 27 British Invasion bands"]},
+      {q:"What is 'microtonality' in music?",                            a:["The use of intervals smaller than a semitone — dividing octaves into more than 12 equal steps — used by composers like Ligeti and Scelsi","Music composed using extremely slow tempos","Music using only three semitone intervals","A composition style using only the top and bottom registers of instruments"]},
     ],
   },
 
@@ -2375,6 +2782,25 @@ const QUESTIONS = {
       {q:"What is the main ingredient in a traditional hummus?",      a:["Chickpeas","Lentils","Black beans","Soybeans"]},
       {q:"What does 'organic' food primarily mean?",                  a:["Grown without synthetic pesticides or fertilizers","Contains no added sugar","Locally grown and sourced","Free from all processing"]},
       {q:"What gives chocolate its bitter flavor?",                   a:["Cacao beans (cocoa solids)","Coffee extract","Dark sugar","Vanilla absence"]},
+      {q:"What is the main ingredient in a traditional guacamole?",      a:["Avocado","Tomato","Onion","Lime"]},
+      {q:"What country is famous for inventing sushi?",                  a:["Japan","China","Korea","Thailand"]},
+      {q:"What does 'vegan' mean in food terms?",                        a:["No animal products whatsoever — no meat, dairy, eggs, or honey","No red meat but fish and dairy allowed","No processed foods","Only raw plant foods"]},
+      {q:"What grain is used to make most bread?",                       a:["Wheat","Rice","Corn","Barley"]},
+      {q:"What is the main ingredient in traditional hummus?",           a:["Chickpeas","Lentils","Black beans","Soybeans"]},
+      {q:"What nationality invented the sandwich?",                      a:["British — named after the Earl of Sandwich","American","French","German"]},
+      {q:"What is a 'stock' in cooking?",                                a:["A flavorful liquid made by simmering bones, vegetables, and herbs","A thick sauce made from reduced cream","A type of bread starter","A seasoning blend for soups"]},
+      {q:"What fruit is used to make traditional guacamole?",            a:["Avocado","Mango","Lime","Tomato"]},
+      {q:"What is 'gluten'?",                                            a:["A protein found in wheat, barley, and rye that gives dough its elasticity","A type of sugar found in grains","A food additive used as a preservative","A starch that thickens sauces"]},
+      {q:"What is the most widely consumed meat in the world?",          a:["Pork","Chicken","Beef","Fish"]},
+      {q:"What gives red wine its characteristic colour?",               a:["The grape skins, which are included during fermentation","The grape juice itself","Tannins extracted from oak barrels","Added natural coloring during bottling"]},
+      {q:"What is the difference between baking and roasting?",          a:["Both use dry oven heat — baking typically refers to bread/pastries/cakes; roasting to meats and vegetables","Baking uses water; roasting uses fat","Roasting requires higher temperatures than baking always","Baking uses convection; roasting uses radiant heat only"]},
+      {q:"What is the main flavour in traditional pesto?",               a:["Fresh basil","Parsley","Oregano","Spinach"]},
+      {q:"What is 'fermentation' in food production?",                   a:["A process where microorganisms like yeast or bacteria convert sugars into acids, alcohol, or gases","A method of preserving food by removing moisture","The controlled decomposition of food under pressure","Heating food to kill bacteria and extend shelf life"]},
+      {q:"Which cuisine is hummus, falafel, and shawarma associated with?", a:["Middle Eastern (Levantine)","Greek","Turkish","North African"]},
+      {q:"What is the difference between jam and jelly?",                a:["Jam contains fruit pieces; jelly is made from clear strained juice","Jam is cooked longer than jelly","Jelly has added pectin; jam does not","Jam is sweetened; jelly is unsweetened"]},
+      {q:"What is 'umami' sometimes called in English?",                 a:["Savoriness or savory taste — the fifth taste alongside sweet, sour, salty, bitter","Bitterness — the sixth taste","Pungency — the sharp taste of spices","Creaminess — the richness of fats"]},
+      {q:"What country is the world's largest producer of coffee?",      a:["Brazil","Colombia","Ethiopia","Vietnam"]},
+      {q:"What makes sourdough bread different from regular bread?",      a:["It's leavened by wild yeast and lactic acid bacteria in a starter, giving it a tangy flavor","It uses twice the yeast of regular bread","It is made without any salt","It is always baked without a tin or pan"]},
     ],
     medium: [
       {q:"What does the Scoville scale measure?",                      a:["Spiciness/heat of peppers","Sweetness of fruits","Bitterness of coffee","Sourness of citrus"]},
@@ -2397,6 +2823,20 @@ const QUESTIONS = {
       {q:"What is the difference between a lager and an ale?",        a:["Lagers ferment cold with bottom-fermenting yeast; ales ferment warm with top-fermenting yeast","Lagers are darker; ales are lighter","Ales are stronger than lagers","Lagers are always carbonated; ales are flat"]},
       {q:"What is 'tempura' in Japanese cooking?",                    a:["Seafood or vegetables in a light batter and deep fried","Grilled meat on skewers","Fermented soybean paste","Thinly sliced raw beef"]},
       {q:"What distinguishes 'extra virgin' olive oil?",              a:["It is cold-pressed with no chemical refining and has <0.8% acidity","It is filtered multiple times for purity","It comes only from Italian olives","It is aged in oak barrels"]},
+      {q:"What is 'Wagyu' beef and what distinguishes it?",              a:["Beef from specific Japanese cattle breeds known for extreme marbling (intramuscular fat), producing exceptional tenderness and flavour","Free-range organic beef from Japanese family farms","A specific cut from the rib section of Japanese Black cattle","Beef from cattle fed exclusively on sake and beer"]},
+      {q:"What is the difference between espresso and drip coffee?",     a:["Espresso forces pressurized hot water through finely ground beans producing a concentrated shot; drip filters water through coarser grounds by gravity","Espresso uses more water; drip uses less","Drip coffee is stronger; espresso is milder","Espresso is made cold; drip coffee uses boiling water"]},
+      {q:"What is 'tempering' chocolate?",                               a:["A process of carefully melting and cooling chocolate to specific temperatures to create stable cocoa butter crystals for a glossy finish and satisfying snap","Adding sugar gradually to liquid chocolate","Blending dark and milk chocolate to achieve a specific cocoa percentage","Heating chocolate with cream to make ganache"]},
+      {q:"What is the difference between stock and broth?",              a:["Stock is made from bones; broth from meat — stock is richer in gelatin and collagen; broth is typically lighter","Broth is thicker because it contains bone marrow","Stock is always clear; broth is always cloudy","Broth takes much longer to cook than stock"]},
+      {q:"What is 'blanching' and why is it used?",                      a:["Briefly boiling vegetables then plunging into ice water — it sets colour, destroys enzymes that cause deterioration, and partially cooks for later use","Slow-cooking in fat to tenderise","High-heat roasting to develop caramelisation","Soaking in acidulated water to prevent browning"]},
+      {q:"What is 'fermentation' in bread making?",                      a:["Yeast and bacteria consuming sugars and producing CO₂ (which makes bread rise) and flavour compounds — the bulk rise before shaping","The process of mixing flour and water before adding yeast","The final proof after shaping the loaf","The Maillard browning that happens during baking"]},
+      {q:"What is 'umami' and which foods are richest in it?",           a:["The fifth taste (savory/meaty), driven by glutamate — richest in aged cheese, soy sauce, mushrooms, tomatoes, cured meats, and fish sauce","A Japanese seasoning blend","A type of natural MSG extract","The flavor compound responsible for spicy foods"]},
+      {q:"What is 'cold chain' in food safety?",                         a:["The uninterrupted temperature-controlled supply chain (refrigerated) from production to consumer that prevents bacterial growth","Freezing all food at source before distribution","Using dry ice to ship perishables internationally","Chilling food to room temperature before refrigerating"]},
+      {q:"What is the difference between 'dry-aged' and 'wet-aged' beef?", a:["Dry-aging exposes beef to air in humidity-controlled rooms for weeks, concentrating flavour and tenderness via enzymes; wet-aging is vacuum-sealed","Wet-aging is done in water; dry-aging without any liquid","Dry-aging uses heat; wet-aging uses refrigeration","They produce identical results but dry-aging costs more"]},
+      {q:"What causes the characteristic smell of freshly baked bread?", a:["The Maillard reaction on the crust creates hundreds of aromatic compounds, plus CO₂ and ethanol released during baking","Steam evaporating from the bread's interior","Yeast dying and releasing amino acids","Gluten breaking down under heat releasing volatile compounds"]},
+      {q:"What is 'ghee' and how does it differ from butter?",           a:["Ghee is clarified butter with all water and milk solids removed — it has a higher smoke point, longer shelf life, and nuttier flavour","Ghee is fermented butter from water buffalo milk","Ghee is an Indian spice blend containing turmeric and butter","Ghee is whipped butter with added vegetable oil"]},
+      {q:"What is 'mirepoix'?",                                          a:["A French base of diced onion, carrot, and celery used to add flavour to stocks, soups, and braises","A sauce made from reduced wine and cream","A type of finely chopped herb mixture","A spiced marinade for meat"]},
+      {q:"What is the smoke point of oils and why does it matter?",      a:["The temperature at which oil begins to smoke and break down — exceeding it produces acrid flavour and harmful compounds, so choose oils with appropriate smoke points for each cooking method","The point at which all moisture has evaporated from the oil","The minimum temperature at which oil can safely be used for frying","The temperature at which oil ignites — relevant only for fire safety"]},
+      {q:"What does 'terroir' mean when applied to food and drink?",     a:["The combination of environmental factors (soil, climate, geography, microbes) that gives a product its distinctive local character — used in wine, cheese, coffee, and chocolate","A French technique for slow-roasting with aromatic herbs","The certification that a food product originates from a specific region","The flavour profile of a wine or food determined by the producer's method"]},
     ],
     hard: [
       {q:"What is the Maillard reaction in cooking?",                  a:["Browning reaction between amino acids and sugars","Caramelization of pure sugar","Coagulation of proteins in eggs","Emulsification of fats"]},
@@ -2419,6 +2859,20 @@ const QUESTIONS = {
       {q:"What is the difference between 'confit' and 'braise'?",     a:["Confit is cooked submerged in fat; braise uses a liquid like stock","Confit is dry-heat; braise is wet-heat","Braise uses more fat than confit","They are regional names for the same technique"]},
       {q:"What does 'umami' literally mean in Japanese?",             a:["Pleasant savory taste","Fifth taste","Meaty flavor","Depth of flavor"]},
       {q:"What is the Maillard reaction vs caramelization — key difference?", a:["Maillard involves amino acids + sugars; caramelization is sugar-only pyrolysis","They are the same chemical process","Maillard is only for meats; caramelization is for vegetables","Caramelization occurs at lower temperatures"]},
+      {q:"What is 'gelification' using methylcellulose?",                a:["A reverse-gelling process: methylcellulose gels when heated and melts when cooled — used in molecular gastronomy for hot gels","A method of gelling with agar that sets only above 60°C","Using gelatin in quantities so small it remains liquid at room temperature","Creating sphere-shaped gels using centrifugal force"]},
+      {q:"What is the purpose of 'resting' meat after cooking?",          a:["Allowing juices redistributed during cooking to reabsorb into the muscle fibres, resulting in juicier meat when cut","Cooling the meat to stop it overcooking","Letting the outside crust firm up before slicing","Allowing carryover cooking to finish the centre"]},
+      {q:"What is 'reactive nitrogen' in food chemistry?",               a:["Nitrates and nitrites used in curing meats that inhibit bacterial growth but can form potentially carcinogenic nitrosamines — an ongoing area of food safety research","Nitrogen gas used to preserve freshness in sealed bags","A natural nitrogen compound in leafy greens","Nitrogen in the Maillard reaction responsible for browning"]},
+      {q:"What makes 'Ibérico' ham different from regular cured ham?",    a:["It comes from black Iberian pigs that forage on acorns (bellota), giving the fat unique oleic acid content and complex flavour after 24–48 months curing","It is smoked for 72 hours over oak wood","It is salted with sea salt from the Atlantic coast only","It is produced only in the Andalusia region using 500-year-old recipes"]},
+      {q:"What is 'isoamyl acetate' and why is it relevant to food flavour?", a:["The ester compound responsible for banana flavour — also produced by yeast during fermentation, contributing fruity notes to beer and wine","The compound that gives coffee its bitter taste","The flavour molecule responsible for the taste of vanilla","The sulfur compound that gives cooked onions their sweetness"]},
+      {q:"What is 'miso' and how is it produced?",                        a:["A Japanese fermented paste of soybeans (and often grain) with koji mold and salt — fermented from weeks to years, developing complex umami flavour","A Japanese rice wine produced by fermenting rice with koji","A seasoning made from dried bonito flakes and kombu seaweed","A fermented Korean chili paste made from gochugaru and rice"]},
+      {q:"What is the chemistry behind why cutting onions causes tears?", a:["Cutting breaks cells releasing lachrymatory factor synthase, which converts sulphenic acids to syn-propanethial-S-oxide — a volatile compound that irritates eye receptors","The release of acidic compounds that evaporate and irritate the eyes","Natural histamines in onions that trigger a tear reflex","Tiny particles of onion skin that physically irritate tear ducts"]},
+      {q:"What is 'transglutaminase' ('meat glue') and how is it used?", a:["An enzyme that bonds proteins together, used to create seamless joined cuts of meat or fish from trimmings — controversial for food safety labelling reasons","A tenderising enzyme injected into tough cuts","A natural binder extracted from wheat gluten","An emulsifier used to keep fat and water blended in processed meats"]},
+      {q:"What is the significance of 'Noma' restaurant in Copenhagen?", a:["Voted the world's best restaurant multiple times, it pioneered New Nordic cuisine — foraging, fermentation, and hyperlocal ingredients — and transformed global fine dining","The first restaurant to receive three Michelin stars in Scandinavia","The restaurant that introduced molecular gastronomy to Europe","The first restaurant to serve an entirely plant-based tasting menu"]},
+      {q:"What is 'autolysis' in winemaking?",                            a:["The breakdown of dead yeast cells after secondary fermentation in bottle — releasing compounds that give Champagne its characteristic brioche and toasty flavour","The natural clarification of wine by gravity settling","The slow oxidation that gives aged white Burgundy its nutty character","The breakdown of grape skins during extended maceration"]},
+      {q:"What is 'acrylamide' in food science?",                         a:["A potentially harmful chemical compound that forms when starchy foods are cooked at high temperatures (frying, baking, roasting) via the Maillard reaction — an ongoing regulatory concern","A natural preservative found in fermented foods","A flavour enhancer approved for use in bread and cakes","A type of food-grade plastic used in packaging"]},
+      {q:"What is 'spherification' in molecular gastronomy?",            a:["Using sodium alginate and calcium chloride reactions to create liquid-filled spheres with a thin gel membrane — producing 'caviar pearls' and other effects","Forming food into spheres using precision moulds","Freeze-sphering liquid in liquid nitrogen","Whipping liquids into sphere-shaped foams using lecithin"]},
+      {q:"What makes Roquefort cheese distinctively blue and what is required by law?", a:["Blue-green veins of Penicillium roqueforti mold — by law it must be aged in the limestone caves of Combalou near Roquefort-sur-Soulzon, France","The use of unpasteurised sheep's milk from a specific French breed — no mold is added","Naturally occurring mold from cave air — no starter culture is used","Penicillium camemberti mold added during the salting stage"]},
+      {q:"What is 'hydrocolloid' in food science and give two examples?", a:["A substance that forms a gel when mixed with water — examples include agar, xanthan gum, carrageenan, and methylcellulose, used as thickeners and stabilisers","A water-soluble fat substitute used in low-calorie cooking","A family of artificial sweeteners derived from water-processed cane sugar","A preservation technique using water-based brines"]},
     ],
   },
 
@@ -2444,6 +2898,20 @@ const QUESTIONS = {
       {q:"What has words but never speaks?",                          a:["A book","A sign","A dictionary","A letter"]},
       {q:"You see me once in June, twice in November, and not at all in May. What am I?", a:["The letter E","The letter N","A full moon","A leap year"]},
       {q:"What is always in front of you but cannot be seen or touched?", a:["The future","Your nose","Air","Time"]},
+      {q:"What has a thumb and four fingers but is not alive?",           a:["A glove","A hand","A mitten","A mannequin"]},
+      {q:"The more you share me, the less you have. What am I?",         a:["A secret","Your money","Time","Food"]},
+      {q:"What building has the most stories?",                          a:["A library","A skyscraper","A museum","A school"]},
+      {q:"What goes up and down but never moves?",                       a:["Stairs","A thermometer","The stock market","A bouncing ball"]},
+      {q:"What has two hands but no arms?",                              a:["A clock","A pair of scissors","A compass","A steering wheel"]},
+      {q:"What gets sharper the more you use it?",                       a:["Your brain","A pencil","A knife","Your eyes"]},
+      {q:"What has no beginning, end, or middle?",                       a:["A circle","A point","A line","A dot"]},
+      {q:"What is black and white and read all over?",                   a:["A newspaper","A zebra in the sun","A chalkboard","A penguin with sunburn"]},
+      {q:"What can you hold without touching it?",                       a:["A conversation","Your breath","A thought","A grudge"]},
+      {q:"What do you throw out when you need it and bring in when you're done?", a:["An anchor","A fishing line","A kite string","A boomerang"]},
+      {q:"What runs around your yard without moving?",                   a:["A fence","A garden hose","A sprinkler","A hedge"]},
+      {q:"What grows when it eats, but dies when it drinks?",            a:["Fire","A plant","A yeast culture","A bonfire"]},
+      {q:"What has a bed but never sleeps, a bank but no money, and a mouth but never eats?", a:["A river","A hospital","A library","A road"]},
+      {q:"What is so light that even the weakest person can hold it for hours — but even the strongest can't hold it for more than a minute?", a:["Their breath","A feather","A thought","A cloud"]},
     ],
     medium: [
       {q:"I am an odd number. Remove one letter and I become even. What number am I?", a:["Seven (s+EVEN)","Five","Nine","Three"]},
@@ -2466,6 +2934,21 @@ const QUESTIONS = {
       {q:"What is so fragile that saying its name breaks it?",         a:["Silence","A glass","A secret","A promise"]},
       {q:"If there are 3 apples and you take away 2, how many apples do YOU have?", a:["2 (the ones you took)","1","3","0"]},
       {q:"I am not alive, but I grow. I have no lungs, but I need air. What am I?", a:["Fire","A plant","A cloud","A shadow"]},
+      {q:"What disappears the moment you say its name?",                 a:["Silence","A secret","Darkness","An echo"]},
+      {q:"I have no voice, yet I speak to you. I tell of things in the world people do. What am I?", a:["A book","A photo","A painting","A mirror"]},
+      {q:"What is at the end of a rainbow?",                             a:["The letter W","A pot of gold","More rainbow","Nothing — it has no end"]},
+      {q:"I am an odd number. Take away a letter and I become even. What am I?", a:["Seven (remove 's' → 'even')","Five","Nine","Three"]},
+      {q:"You see a house with two doors. You enter through one door and leave through the same door. What kind of house is it?", a:["A mushroom","A tent","A revolving door building","An igloo"]},
+      {q:"If 2 is company and 3 is a crowd, what are 4 and 5?",          a:["Nine (4 + 5 = 9)","A party","Too many","Seven"]},
+      {q:"What gets bigger every time you take something from it?",       a:["A hole","A debt","A shadow","A fire"]},
+      {q:"Mary's father has five daughters: Nana, Nene, Nini, Nono. What is the fifth daughter's name?", a:["Mary","Nunu","Nana","Nene"]},
+      {q:"A man drives from New York to Boston in 4 hours. He returns on a road with the same distance but averages only 2 hours. Wait — how can the return trip be faster?", a:["He drove twice as fast on the return — 2 hours is the time, not the speed","This is impossible","He took a different route","He drove downhill the entire way back"]},
+      {q:"A girl fell off a 50-foot ladder but didn't get hurt. How?",    a:["She fell off the bottom rung","She had a safety harness","She landed in a swimming pool","She was only 2 feet up"]},
+      {q:"What word becomes shorter when you add two letters to it?",     a:["'Short' → 'shorter'","'Long'","'Big'","'Large'"]},
+      {q:"How many seconds are in a year?",                              a:["31,536,000 (365 × 24 × 60 × 60)","12 (Jan 2nd, Feb 2nd…)","365","3,600"]},
+      {q:"You have a 3-gallon jug and a 5-gallon jug. How do you measure exactly 4 gallons?", a:["Fill the 5, pour into the 3, empty the 3, pour the 2 remaining into the 3, refill the 5, pour 1 gallon into the 3 to fill it — leaving 4 in the 5","Fill the 3 twice into the 5","You cannot — 4 is not achievable","Fill both and combine them, then pour away 4 gallons"]},
+      {q:"If yesterday was two days after Monday, what day is it today?",  a:["Thursday","Wednesday","Tuesday","Friday"]},
+      {q:"What can run but never walk, has a mouth but never talks, has a head but never weeps, has a bed but never sleeps?", a:["A river","A clock","A car","A road"]},
     ],
     hard: [
       {q:"What is the next number in the sequence: 1, 1, 2, 3, 5, 8, 13, ___?", a:["21","20","18","16"]},
@@ -2488,6 +2971,20 @@ const QUESTIONS = {
       {q:"What always comes before a thunderstorm?",                   a:["Lightning (and the letter T)","Rain","Wind","Dark clouds"]},
       {q:"I have cities but no houses. I have mountains but no trees. I have water but no fish. What am I?", a:["A map","A painting","A snow globe","A terrarium"]},
       {q:"A pound of feathers vs. a pound of gold — which is heavier?", a:["They weigh the same (both are 1 pound)","Gold is heavier","Feathers are heavier","Depends on the altitude"]},
+      {q:"A bat and a ball cost $1.10. The bat costs $1 more than the ball. How much does the ball cost?", a:["5 cents (not 10 cents — that's the intuitive but wrong answer)","10 cents","50 cents","1 cent"]},
+      {q:"In a race, you overtake the person in second place. What place are you now in?", a:["Second place","First place","Third place","It depends on how many runners there are"]},
+      {q:"You have a fox, a chicken, and a sack of grain. You must cross a river by boat. You can only take one item at a time. The fox eats the chicken; the chicken eats the grain if left alone. How do you do it?", a:["Take chicken across, go back, take fox, bring chicken back, take grain, go back, take chicken","Take all three at once — trick answer","Take fox first, then grain, then chicken","Take grain first, then chicken, then fox"]},
+      {q:"What number comes next in this pattern: 2, 4, 8, 16, 32, ___?", a:["64 (powers of 2)","48","36","40"]},
+      {q:"What is the next letter in this sequence: O, T, T, F, F, S, S, ___?", a:["E (first letters of One, Two, Three, Four, Five, Six, Seven, Eight)","N","A","T"]},
+      {q:"A woman has 7 daughters, and each daughter has 1 brother. How many children does the woman have?", a:["8 (7 daughters + 1 shared brother)","14","8 each","7"]},
+      {q:"You are in a dark room with one match. You have a candle, an oil lamp, and a fireplace. What do you light first?", a:["The match","The candle","The oil lamp","The fireplace"]},
+      {q:"What is the missing number: 6, 13, 27, 55, 111, ___?",         a:["223 (each number × 2 + 1)","222","220","225"]},
+      {q:"The day before two days after the day before tomorrow is Saturday. What day is today?", a:["Friday","Thursday","Saturday","Wednesday"]},
+      {q:"You have 12 balls, all identical in appearance. One is slightly heavier or lighter. In 3 weighings on a balance scale, how can you find it?",a:["Divide into three groups of 4 and use a systematic elimination strategy — it is possible in exactly 3 weighings","It is impossible in fewer than 4 weighings","Weigh all 12 at once and repeat twice","Use the scale twice then guess"]},
+      {q:"If all Bloops are Razzles and all Razzles are Lazzles, are all Bloops definitely Lazzles?", a:["Yes — by transitive logic: Bloop → Razzle → Lazzle","No — not enough information","Only if all Lazzles are Bloops too","Only sometimes"]},
+      {q:"What is the minimum number of socks you must pull from a drawer (in the dark) containing 10 red and 10 blue socks to guarantee a matching pair?", a:["3 (by the pigeonhole principle)","2","11","4"]},
+      {q:"A king has two children. You're told at least one is a girl. What is the probability that both are girls?", a:["1/3 (not 1/2 — the sample space is BB, BG, GB, GG; eliminating BB leaves 3 outcomes, 1 of which is GG)","1/2","2/3","1/4"]},
+      {q:"How many squares are on a standard 8×8 chessboard (all sizes)?", a:["204 (1×1 to 8×8 squares counted separately)","64","100","256"]},
     ],
   },
 
@@ -2514,6 +3011,20 @@ const QUESTIONS = {
       {q:"What does CPR stand for?",                                                   a:["Cardiopulmonary Resuscitation","Cardiac Pressure Response","Coronary Pulmonary Resuscitation","Critical Patient Response"]},
       {q:"What is the main function of the lungs?",                                    a:["Exchanging oxygen and carbon dioxide between air and blood","Pumping blood through the body","Filtering toxins from the blood","Producing red blood cells"]},
       {q:"What does 'hydration' mean in the context of health?",                       a:["Maintaining adequate water levels in the body","Eating enough vegetables and fruit","Getting enough sleep each night","Having proper macro-nutrient balance"]},
+      {q:"What does it mean to have high blood pressure?",               a:["The force of blood against artery walls is consistently too high, stressing the heart and vessels","The heart beats faster than normal","Blood is thicker than average","There is too much blood in the body"]},
+      {q:"What is a 'balanced diet'?",                                   a:["Eating a variety of foods that provide all essential nutrients in the right proportions","Eating equal amounts of all food groups","Counting calories for every meal","Avoiding all processed foods"]},
+      {q:"What does 'cardio' exercise do for your heart?",               a:["Strengthens the heart muscle and improves circulation, reducing heart disease risk","Only burns calories without heart benefit","Temporarily increases heart rate with no long-term effect","Exclusively builds lung capacity"]},
+      {q:"What is the purpose of brushing your teeth twice a day?",      a:["Removing plaque and bacteria to prevent tooth decay and gum disease","Whitening teeth","Strengthening tooth enamel","Massaging the gums"]},
+      {q:"What is a 'fever' and when is it a concern?",                  a:["Body temperature above 38°C (100.4°F), often indicating the immune system fighting infection — above 39.5°C warrants medical attention","Any temperature above normal body temperature","A temperature of exactly 37°C","A cold sensation caused by infection"]},
+      {q:"What is 'protein' and why is it important?",                   a:["A macronutrient made of amino acids — essential for building and repairing muscles, making enzymes, and many bodily functions","The body's main energy source","A type of fat stored in muscles","A micronutrient found only in meat"]},
+      {q:"What is a 'probiotic'?",                                       a:["Live beneficial bacteria or yeasts that support gut health — found in yogurt, kefir, and fermented foods","A supplement that replaces digestive enzymes","A type of fiber that feeds gut bacteria","A medication that kills harmful gut bacteria"]},
+      {q:"What causes a cold?",                                           a:["A viral infection — most commonly rhinovirus — not cold weather itself","Cold temperatures weakening the immune system","Bacteria from contact with sick people","Lack of Vitamin C in the diet"]},
+      {q:"What is the difference between aerobic and anaerobic exercise?", a:["Aerobic ('with oxygen') sustains effort over time (running, cycling); anaerobic ('without oxygen') is short bursts of intense effort (sprinting, weightlifting)","Aerobic is done outdoors; anaerobic is done indoors","Anaerobic requires equipment; aerobic does not","Aerobic builds muscle; anaerobic improves endurance"]},
+      {q:"What is 'mental health'?",                                     a:["Our emotional, psychological, and social wellbeing — affecting how we think, feel, act, and handle stress","Only the absence of diagnosed mental illness","Brain health — the physical condition of neural tissue","Intellectual capability and cognitive performance"]},
+      {q:"What is the recommended daily fruit and vegetable intake?",     a:["At least 5 portions (400g) per day — per WHO guidelines","2 portions per day","10 portions per day","1 portion per day is sufficient"]},
+      {q:"What is 'dehydration' and what are its early signs?",          a:["Insufficient water in the body — early signs include thirst, dark urine, headache, and fatigue","Drinking too much water diluting electrolytes","Low blood sugar from not eating enough","Low iron causing tiredness and pale skin"]},
+      {q:"What is the function of the immune system?",                   a:["Defending the body against pathogens — bacteria, viruses, fungi, and parasites — and abnormal cells like cancer","Pumping blood through the body","Producing hormones to regulate body functions","Filtering toxins from the blood"]},
+      {q:"What does 'metabolism' mean?",                                 a:["The chemical processes by which the body converts food into energy and builds or breaks down materials for bodily functions","Only the rate at which the body burns calories","The digestion of food in the stomach and intestines","The absorption of nutrients in the small intestine"]},
     ],
     medium: [
       {q:"What is the longest bone in the human body?",                                 a:["Femur","Tibia","Humerus","Fibula"]},
@@ -2536,6 +3047,20 @@ const QUESTIONS = {
       {q:"What is 'intermittent fasting'?",                                           a:["Cycling between defined periods of eating and fasting","Eating only one meal per day","Skipping breakfast every day","A type of severe calorie restriction"]},
       {q:"What is the liver's primary role?",                                         a:["Detoxifying blood, producing bile, and metabolizing nutrients","Filtering urine from the blood","Producing insulin for blood sugar","Storing oxygen for the body"]},
       {q:"What does serotonin regulate in the body?",                                 a:["Mood, sleep, and appetite","Short-term memory","Pain response","Hunger only"]},
+      {q:"What is 'sleep hygiene'?",                                     a:["Habits and practices that promote consistent, quality sleep — such as regular sleep times, limiting screens before bed, and a cool dark room","Washing bedding and pillowcases regularly","The medical study of sleep disorders","Sleeping for exactly 8 hours every night"]},
+      {q:"What is the difference between a virus and a bacterium?",      a:["Viruses are non-living particles needing a host cell to replicate; bacteria are living single-celled organisms — antibiotics kill bacteria but not viruses","Viruses are larger than bacteria","Bacteria require a host; viruses can replicate independently","Viruses cause more serious illness than bacteria always"]},
+      {q:"What is 'hypertension' and what are its risks?",               a:["Chronically high blood pressure — increases risk of heart attack, stroke, kidney disease, and aneurysm","A condition where the heart beats irregularly","Elevated blood sugar levels over time","An inflammation of the coronary arteries"]},
+      {q:"What is the recommended amount of moderate exercise per week for adults (WHO guidelines)?", a:["At least 150–300 minutes of moderate-intensity aerobic activity","30 minutes per day, 7 days a week","60 minutes per day minimum","At least 500 minutes of light activity"]},
+      {q:"What is 'gut microbiome'?",                                    a:["The trillions of microorganisms (bacteria, fungi, viruses) living in the digestive tract — influencing immunity, digestion, mental health, and metabolism","The bacteria in the stomach that digest food","The beneficial bacteria found only in fermented foods","Microbes in the intestines that cause disease"]},
+      {q:"What is 'dopamine' and what does it regulate?",                a:["A neurotransmitter involved in reward, motivation, and pleasure — also critical for movement control; its depletion causes Parkinson's disease","A hormone released during stress by the adrenal glands","The primary neurotransmitter regulating sleep and mood","A brain chemical that regulates pain response"]},
+      {q:"What is 'type 2 diabetes' and how is it related to lifestyle?", a:["A metabolic condition where cells become resistant to insulin — strongly linked to excess body weight, physical inactivity, and poor diet, though genetics also play a role","An autoimmune disease where the body destroys insulin-producing cells","A condition caused exclusively by excessive sugar consumption","A disease affecting only older adults"]},
+      {q:"What is 'cognitive behavioural therapy' (CBT)?",               a:["A form of psychotherapy that helps people identify and change negative thought patterns and behaviours — effective for depression, anxiety, and many other conditions","A brain stimulation therapy using electrical pulses","A medication-based treatment for cognitive decline","A relaxation therapy using mindfulness and meditation only"]},
+      {q:"What is 'inflammation' in the body?",                          a:["The immune system's response to injury or infection — acute inflammation is protective; chronic inflammation is linked to heart disease, cancer, and autoimmune conditions","Swelling caused only by physical injury","The body's response to allergens only","Damage caused by oxidative stress from free radicals"]},
+      {q:"What is 'BMR' (Basal Metabolic Rate) and what affects it?",   a:["Calories burned at rest to maintain basic functions — affected by age, sex, body composition, and genetics; muscle mass raises BMR significantly","Total daily calorie expenditure including exercise","The rate of digestion after a meal","Resting heart rate converted to calorie burn"]},
+      {q:"What is 'oxidative stress' in health?",                        a:["An imbalance between free radicals and antioxidants in the body — linked to aging, heart disease, cancer, and neurodegenerative diseases","The damage caused by too much oxygen during exercise","Stress caused by overexposure to sunlight","A condition where the blood has too much dissolved oxygen"]},
+      {q:"What is the difference between HDL and LDL cholesterol?",      a:["HDL is 'good' cholesterol that removes LDL from arteries; LDL is 'bad' cholesterol that builds up in arterial walls, raising heart disease risk","HDL is found only in plant foods; LDL only in animal fats","LDL is produced by exercise; HDL by a sedentary lifestyle","They are the same compound measured at different points in the body"]},
+      {q:"What is 'circadian rhythm'?",                                  a:["The body's internal 24-hour clock regulating sleep-wake cycles, hormone release, body temperature, and metabolism — disrupted by shift work, jet lag, and screen light","The rhythm of the heartbeat during the day","The cyclical pattern of hunger through the day","A sleep stage that occurs in 90-minute cycles"]},
+      {q:"What is the function of the pancreas in digestion and blood sugar control?", a:["It produces digestive enzymes (sent to the small intestine) and hormones — insulin and glucagon — that regulate blood glucose levels","It filters bile from the liver for fat digestion","It absorbs nutrients from digested food","It produces stomach acid and pepsin for protein digestion"]},
     ],
     hard: [
       {q:"What psychological term describes the tendency to seek information that confirms existing beliefs?", a:["Confirmation bias","Dunning-Kruger effect","Cognitive dissonance","Anchoring bias"]},
@@ -2558,6 +3083,20 @@ const QUESTIONS = {
       {q:"What is HIIT (High-Intensity Interval Training)?",                           a:["Alternating short bursts of intense exercise with rest or low-intensity periods","A type of heavy weight training","Continuous aerobic exercise at maximum effort for 20+ minutes","Circuit training with no rest between exercises"]},
       {q:"What is the 'HPA axis' in stress physiology?",                               a:["The hypothalamic-pituitary-adrenal system that regulates the stress hormone cortisol","A neural pathway controlling involuntary movement","The hormonal system controlling growth and thyroid function","A feedback loop between the brain and the immune system"]},
       {q:"What does VO2 max measure?",                                                  a:["Maximum rate of oxygen the body can use during intense exercise","Peak blood pressure during physical effort","Resting metabolic rate per kilogram of body mass","Lung capacity at rest"]},
+      {q:"What is 'epigenetics' and why is it significant?",             a:["Changes in gene expression without altering DNA sequence — caused by environment, diet, and stress — and can sometimes be passed to offspring, challenging the nature/nurture dichotomy","The study of inherited genetic diseases","Mutations to DNA caused by environmental factors","The process by which genes are transcribed into proteins"]},
+      {q:"What is the mechanism of action of SSRI antidepressants?",     a:["They block serotonin reuptake in synapses, increasing available serotonin — treating depression and anxiety, though exactly why this helps is still debated","They increase dopamine production in the reward pathway","They stimulate the prefrontal cortex directly","They block cortisol production in the adrenal glands"]},
+      {q:"What is 'neuroplasticity' and why is it clinically significant?", a:["The brain's ability to form new neural connections and reorganise throughout life — enabling recovery from injury, learning new skills, and underpinning therapies like CBT","The brain's resistance to neurodegenerative disease","The flexibility of individual neurons to change shape","The brain's immune response to infection via microglia"]},
+      {q:"What is 'hormesis' in health science?",                        a:["The phenomenon where a substance harmful in high doses is beneficial in low doses — e.g., exercise (controlled stress) strengthens muscles, fasting stimulates autophagy","The protective effect of antioxidants against oxidative damage","The immune system's ability to adapt to repeated pathogen exposure","A pharmacological principle where drug dosage must match body weight"]},
+      {q:"What is the 'gut-brain axis'?",                                a:["A bidirectional communication system between the enteric nervous system of the gut and the central nervous system — linking gut microbiome health to mood, anxiety, and cognition","The neural pathway controlling hunger signals from the stomach to the hypothalamus","The hormonal system regulating appetite through leptin and ghrelin","The vagus nerve's role in controlling heart rate based on digestion"]},
+      {q:"What is 'autophagy' and what role does it play in health?",    a:["The cellular process of breaking down and recycling damaged or unneeded cell components — activated by fasting and exercise, linked to longevity and cancer prevention","The programmed death of cancer cells triggered by chemotherapy","The repair of DNA damage by cellular enzymes","The liver's process of metabolising and clearing old proteins from the blood"]},
+      {q:"What is the 'exposome' in public health research?",            a:["The totality of environmental exposures (chemicals, diet, stress, infections, lifestyle) a person encounters throughout life and their cumulative health effects","The complete set of a person's genetic variants","The measured output of the gut microbiome and its metabolites","The sum of all lifestyle factors affecting life expectancy"]},
+      {q:"What is 'chronic inflammation' and why is it linked to major diseases?", a:["Low-grade persistent immune activation — implicated in heart disease, type 2 diabetes, cancer, Alzheimer's, and depression — driven by obesity, poor diet, stress, and pollution","Repeated acute inflammation from recurring infections","Inflammation caused by autoimmune disease only","An inflammatory response that lasts more than two weeks"]},
+      {q:"What is the 'placebo effect' and what does research reveal about it?", a:["A measurable physiological improvement from an inert treatment — driven by expectation, conditioning, and the therapeutic ritual — and it works even when patients are told it's a placebo (open-label placebo)","A purely psychological illusion with no measurable physical change","The tendency for sick people to recover naturally regardless of treatment","An effect seen only in pain conditions, not other diseases"]},
+      {q:"What is 'pharmacogenomics'?",                                  a:["The study of how an individual's genetic makeup affects their response to drugs — enabling personalised medicine where drug choice and dosage are tailored to a patient's genome","The development of new drugs using genetic engineering","The study of how drugs affect gene expression","The science of testing drug safety in genetically diverse populations"]},
+      {q:"What is 'metabolic syndrome' and what does it increase the risk of?", a:["A cluster of conditions (large waist circumference, high blood pressure, high blood sugar, abnormal cholesterol) that together significantly raise risk of heart disease, stroke, and type 2 diabetes","A single gene mutation causing multiple metabolic deficiencies","A chronic inflammatory condition of the digestive system","A hormonal disorder caused by thyroid dysfunction"]},
+      {q:"What is 'mRNA vaccine' technology and how does it work?",       a:["It delivers messenger RNA instructions into cells, prompting them to produce a protein (like a viral spike) that trains the immune system — no live virus involved, cannot alter DNA","It injects weakened virus into the body to trigger immunity","It delivers DNA to the cell nucleus to produce immunity","It uses viral proteins directly to stimulate antibody production"]},
+      {q:"What is the difference between 'primary' and 'secondary' prevention in public health?", a:["Primary prevention stops disease before it occurs (e.g., vaccination, quitting smoking); secondary prevention detects and treats disease early (e.g., cancer screening)","Primary prevention treats acute disease; secondary manages chronic conditions","Secondary prevention is more cost-effective than primary prevention always","Primary prevention targets individuals; secondary prevention targets populations"]},
+      {q:"What is 'allostatic load' in health research?",                a:["The cumulative physiological 'wear and tear' on the body from chronic stress — measured by biomarkers like cortisol, blood pressure, and inflammatory markers — predicting long-term disease risk","The total caloric deficit required for sustainable weight loss","A measure of the body's maximum stress tolerance before organ failure","The hormonal debt accumulated from chronic sleep deprivation"]},
     ],
   },
 
@@ -2584,6 +3123,20 @@ const QUESTIONS = {
       {q:"What streaming giant originally started as a DVD mail-order service?",        a:["Netflix","Hulu","Amazon Prime","Disney+"]},
       {q:"What is the name of the currency in the Harry Potter universe?",             a:["Galleons (plus Sickles and Knuts)","Gold coins","Pounds","Wizard dollars"]},
       {q:"What is 'binge-watching'?",                                                   a:["Watching multiple episodes of a TV show in one sitting","Watching the same episode repeatedly","Skipping episodes to reach the finale","Watching TV all night without sleeping"]},
+      {q:"What social media platform is associated with the hashtag '#'?", a:["Twitter/X (pioneered hashtags for topic discovery)","Instagram","Facebook","TikTok"]},
+      {q:"Which video game features the character Mario?",               a:["Super Mario Bros. (Nintendo)","Sonic the Hedgehog","Crash Bandicoot","Donkey Kong (also Mario's first game)"]},
+      {q:"What does 'selfie' mean?",                                     a:["A photo taken of yourself, usually with a smartphone","A video posted on social media","A filtered photo shared on Instagram","A live stream of yourself"]},
+      {q:"What is the name of Batman's hometown?",                       a:["Gotham City","Metropolis","Central City","Star City"]},
+      {q:"Which app lets you send disappearing photos?",                 a:["Snapchat","Instagram","BeReal","Facebook"]},
+      {q:"Who is the most-followed person on Instagram (as of 2024)?",   a:["Cristiano Ronaldo","Selena Gomez","Kylie Jenner","Lionel Messi"]},
+      {q:"What is 'streaming' in the context of entertainment?",         a:["Watching or listening to content delivered over the internet in real time without downloading it","Downloading movies to watch offline","Broadcasting live from a TV studio","Watching content on a disc drive"]},
+      {q:"Which Disney princess sings 'Part of Your World'?",            a:["Ariel (The Little Mermaid)","Belle","Moana","Rapunzel"]},
+      {q:"What is an 'influencer'?",                                     a:["A social media creator with a large following who influences their audience's opinions and purchasing decisions","A paid actor in advertisements","A celebrity with a verified social media account","A marketing professional who manages brand accounts"]},
+      {q:"What is the most popular video game console brand in the world?", a:["PlayStation (Sony)","Xbox (Microsoft)","Nintendo","Atari"]},
+      {q:"Who plays Hermione Granger in the Harry Potter films?",        a:["Emma Watson","Emma Stone","Keira Knightley","Natalie Portman"]},
+      {q:"What does 'going viral' mean online?",                         a:["A piece of content rapidly spreading to millions of people through shares and reposts","A computer getting a virus","A celebrity account being hacked","A video being featured by a major news outlet"]},
+      {q:"What is the name of the fictional universe shared by Marvel superhero films?",a:["The Marvel Cinematic Universe (MCU)","The Marvel Extended Universe","The Avengers Universe","The Marvel Film Franchise"]},
+      {q:"Which animated film features the song 'Remember Me'?",        a:["Coco","Moana","Encanto","Brave"]},
     ],
     medium: [
       {q:"What was the name of Taylor Swift's record-breaking 2023–2024 concert tour?", a:["The Eras Tour","Reputation Stadium Tour","Fearless Tour","Red Tour"]},
@@ -2606,6 +3159,20 @@ const QUESTIONS = {
       {q:"In 'Game of Thrones', what is the famous phrase associated with House Stark?", a:["Winter is Coming","Fire and Blood","Hear Me Roar","Ours is the Fury"]},
       {q:"Which Marvel film was the first to reach $1 billion at the global box office?", a:["Marvel's The Avengers (2012)","Iron Man (2008)","Black Panther (2018)","Avatar (2009 — not Marvel)"]},
       {q:"What is the name of the fictional land in 'The Witcher'?",                   a:["The Continent","Rivia","Kaer Morhen","Novigrad"]},
+      {q:"What is the name of the streaming platform launched by Disney in 2019?",   a:["Disney+","Disney Now","Disney Stream","Disney Play"]},
+      {q:"Which rapper won the most Grammy Awards in a single night in 2024?",       a:["Beyoncé (for 'Renaissance' album — 4 awards, record total career)","Taylor Swift","SZA","Miley Cyrus"]},
+      {q:"What is 'AI-generated art' and why is it controversial?",                  a:["Art created by AI models trained on human artwork — controversial because it may use artists' work without consent or compensation","Art that uses algorithms only to add colour and texture","Computer art made with graphic design software","Photography enhanced by AI post-processing filters"]},
+      {q:"Which show features the Dutton family and the American West?",             a:["Yellowstone","Outer Range","1883","Longmire"]},
+      {q:"What is 'Wordle' and why did it go viral in 2021–22?",                    a:["A daily word-guessing puzzle with one answer per day — its shareability, simplicity, and one-shot daily mechanic made it a global phenomenon","A word-search game on Facebook","A spelling bee challenge from The New York Times","A Scrabble variant played on mobile devices"]},
+      {q:"What Apple product was released in 2024 as the company's 'spatial computing' device?", a:["Apple Vision Pro","Apple Reality","Apple XR Goggles","Apple Spatial"]},
+      {q:"Which show features an ensemble cast navigating a luxury hotel in Sicily?", a:["The White Lotus","Succession","Nine Perfect Strangers","The Resort"]},
+      {q:"What is 'Gen Z' and approximately what years does it cover?",               a:["The generation born roughly 1997–2012 — raised with smartphones and social media from childhood","The generation born 1980–1996","People born after 2012","People born between 1965 and 1980"]},
+      {q:"What is 'digital detox'?",                                                  a:["A period of time deliberately avoiding screens and devices to reduce stress and reconnect offline","Removing malware from a computer","A social media cleanse deleting all accounts permanently","An app that monitors and limits screen time"]},
+      {q:"Which musician's 2023 album 'SOS' broke streaming records?",               a:["SZA","Beyoncé","Olivia Rodrigo","Doja Cat"]},
+      {q:"What is 'dark academia' as an aesthetic?",                                  a:["A subculture romanticising intellectual pursuits, classic literature, old universities, and a moody autumnal visual style","A subgenre of horror fiction set in boarding schools","An academic programme for students interested in gothic history","A fashion trend inspired by 1990s grunge music"]},
+      {q:"What is 'BookTok'?",                                                        a:["The community of TikTok creators and viewers focused on books, reading recommendations, and literary discussion","A TikTok-integrated e-reader","A book subscription service marketed on TikTok","A series of TikTok-sponsored bestseller lists"]},
+      {q:"Which video game won Game of the Year at The Game Awards 2023?",           a:["Baldur's Gate 3","The Legend of Zelda: Tears of the Kingdom","Alan Wake 2","Marvel's Spider-Man 2"]},
+      {q:"What is 'doomscrolling'?",                                                  a:["Compulsively scrolling through negative news and social media content despite it causing anxiety or distress","Scrolling through social media while sleep-deprived","Using a phone while walking and bumping into things","Rapidly scrolling past content without engaging"]},
     ],
     hard: [
       {q:"What is the name of Beyoncé's critically acclaimed 2016 visual album?",       a:["Lemonade","Renaissance","Dangerously in Love","B'Day"]},
@@ -2628,6 +3195,20 @@ const QUESTIONS = {
       {q:"What was the original internal name of the platform now called X (formerly Twitter)?", a:["Twttr","StatusNet","Jots","Echo"]},
       {q:"What does 'shipping' mean in fandom culture?",                               a:["Wanting two characters (or real people) to be in a romantic relationship","Delivering fan-made merchandise","Sending fan art to creators","Rating or ranking fictional characters"]},
       {q:"Which TV series popularized the concept of the 'prestige drama' in the 2000s?", a:["The Sopranos","Breaking Bad","Game of Thrones","The Wire"]},
+      {q:"What is the 'attention economy' and how does it relate to social media?",   a:["A system where platforms monetize user attention by maximizing engagement — designed to keep users scrolling through algorithmic feeds, notifications, and dopamine loops","An economic model where social media companies charge per minute of use","The market for advertising agencies selling audience data to brands","A regulatory framework governing how long platforms can retain user data"]},
+      {q:"What was the cultural significance of 'Gangnam Style' (2012)?", a:["The first YouTube video to reach 1 billion views — it introduced K-pop to a global mainstream audience and demonstrated social media's power to make global stars overnight","The first non-English song to reach #1 on the Billboard Hot 100","The first music video to use AI-generated visuals","The most shared video in Facebook history"]},
+      {q:"What is 'parasocial' relationship and why is it relevant to fan culture and streaming?", a:["A one-sided emotional bond audiences feel toward creators or characters — amplified by YouTube and streaming formats that simulate intimacy, raising questions about mental health and creator responsibility","A mutually beneficial relationship between a creator and their fans","A toxic fan relationship involving obsession and harassment","An online friendship formed exclusively through shared media consumption"]},
+      {q:"What is 'auteur theory' in film criticism?",                               a:["The idea that the director is a film's primary creative author whose vision, style, and themes run consistently across their work — developed by French critics in Cahiers du Cinéma","The theory that films should be judged solely on their screenplay","The principle that films made without studio interference are artistically superior","The academic study of a single director's complete filmography"]},
+      {q:"Who coined the term 'medium is the message' and what does it mean?",        a:["Marshall McLuhan — meaning the form of a medium itself shapes society more profoundly than any content it delivers","Roland Barthes — that text has no fixed meaning apart from its medium","Neil Postman — that television trivialises all information it carries","Jean Baudrillard — that media images replace reality"]},
+      {q:"What is 'cancel culture' and what are the main critiques from both sides?", a:["Public withdrawal of support from a person for offensive statements or actions — critics say it's unforgiving mob justice; supporters say it's accountability for the powerful who previously faced none","A marketing strategy that creates controversy intentionally","A legal mechanism for removing harmful content from platforms","A social movement to ban offensive media from public libraries"]},
+      {q:"What distinguishes 'slow cinema' as a film movement?",                      a:["Films using long takes, minimal dialogue, real-time pacing, and contemplative observation — associated with directors like Andrei Tarkovsky, Béla Tarr, and Apichatpong Weerasethakul","Films that use slow-motion cinematography throughout","Black-and-white art cinema made without commercial funding","Films that unfold over multiple days of screening time like Andy Warhol's 'Empire'"]},
+      {q:"What is the 'streaming wars' and which major players are involved?",        a:["Competition among Netflix, Disney+, HBO Max/Max, Apple TV+, Peacock, Paramount+, and Amazon Prime Video for subscriber market share — fragmenting what was once a unified cable TV audience","A legal dispute between streaming platforms over music licensing fees","Competition between YouTube, Twitch, and TikTok for live video dominance","Price wars between telecoms providers offering streaming add-ons"]},
+      {q:"What was 'New Wave' cinema and in which country did it originate?",         a:["La Nouvelle Vague — a French film movement of the late 1950s–60s featuring Godard and Truffaut, using jump cuts, location shooting, and challenging conventional narrative","A British social realist film movement of the 1960s","An Italian neorealist movement featuring Fellini and Antonioni","A Hollywood counter-cinema movement of the 1970s led by Coppola and Scorsese"]},
+      {q:"What is 'post-irony' in contemporary culture?",                             a:["A cultural mode where sincerity and irony coexist — earnest engagement with things (fandoms, pop culture, sentimentality) that would previously be approached only ironically","A comedic style that avoids all sarcasm and irony completely","The use of irony so extreme it loops back to sincerity unintentionally","A critical theory approach to deconstructing postmodern media"]},
+      {q:"What was the cultural impact of the podcast 'Serial' (2014)?",              a:["It single-handedly mainstreamed podcast listening — reaching 5 million downloads faster than any podcast before and proving long-form audio journalism was commercially viable","It was the first true crime podcast ever made","It led directly to the subject's exoneration","It launched Spotify's audio drama division"]},
+      {q:"What is 'transmedia storytelling'?",                                        a:["A narrative strategy where a story world is expanded across multiple media (film, TV, games, comics, social media) with each platform contributing unique content rather than just repeating the same story","Adapting a single story from one medium to another","Using social media to promote a film or TV show","A technique where unreliable narrators tell the same story differently across formats"]},
+      {q:"What is the significance of 'Napster' in music industry history?",          a:["The first widely used peer-to-peer music sharing service (1999–2001) — it collapsed the music industry's CD revenue model and forced a decade-long legal and technological reckoning that eventually led to streaming","The first legal music download store — predecessor to iTunes","The service that first introduced the concept of the music playlist","A piracy platform created by the major record labels to compete with bootleggers"]},
+      {q:"What is 'hauntology' as a cultural concept (Mark Fisher's usage)?",         a:["A cultural condition where society is haunted by futures that were promised but never arrived — Fisher applied it to music and culture marked by nostalgia and an inability to imagine genuinely new futures","The academic study of ghost stories and folklore across cultures","A postmodern literary technique where dead authors are revived through pastiche","A Derrida concept about the unstable presence of meaning in texts"]},
     ],
   },
 
@@ -2654,6 +3235,20 @@ const QUESTIONS = {
       {q:"How many legs does a crab have?",                               a:["10","8","6","12"]},
       {q:"What is a group of fish called?",                               a:["A school","A herd","A flock","A pod"]},
       {q:"What do herbivores eat?",                                       a:["Plants","Meat","Both plants and meat","Insects only"]},
+      {q:"What is the largest reptile in the world?",                    a:["Saltwater crocodile","Komodo dragon","Green anaconda","Leatherback sea turtle"]},
+      {q:"What is the name for a baby deer?",                            a:["Fawn","Foal","Calf","Filly"]},
+      {q:"What type of animal is a dolphin?",                            a:["Mammal","Fish","Amphibian","Reptile"]},
+      {q:"How do whales breathe?",                                       a:["Through blowholes on top of their heads — they are air-breathing mammals","Through gills like fish","Through both gills and lungs","Through pores in their skin"]},
+      {q:"What is the tallest type of grass in the world?",              a:["Bamboo","Sugarcane","Elephant grass","Giant reed"]},
+      {q:"What is the world's largest bird?",                            a:["Ostrich","Emu","Albatross","Condor"]},
+      {q:"What is a group of elephants called?",                         a:["A herd","A pack","A pod","A family"]},
+      {q:"What do bees collect from flowers to make honey?",             a:["Nectar","Pollen","Sap","Dew"]},
+      {q:"What is the lifespan of a mayfly?",                            a:["About 24 hours as an adult (longest-lived larval stage is 1–3 years)","1 week","1 month","6 months"]},
+      {q:"What is a predator?",                                          a:["An animal that hunts and eats other animals","An animal that only eats plants","An animal that scavenges dead carcasses","An animal that eats both plants and animals"]},
+      {q:"What makes a frog an amphibian?",                              a:["It lives both in water and on land and breathes through lungs and skin","It has cold blood and lives in water","It lays eggs and has no legs as a juvenile","It is a cold-blooded animal with four legs"]},
+      {q:"What is the largest land carnivore?",                          a:["Polar bear","Grizzly bear","Siberian tiger","African lion"]},
+      {q:"What is the Amazon rainforest sometimes called?",              a:["The lungs of the Earth","The green desert","The great canopy","The world's garden"]},
+      {q:"What is the name for the process by which a caterpillar transforms into a butterfly?", a:["Metamorphosis","Evolution","Pupation (inside a chrysalis)","Moulting"]},
     ],
     medium: [
       {q:"Which mammals are the only ones known to lay eggs?",            a:["Platypus and echidna","Platypus only","Pangolin","Armadillo"]},
@@ -2676,6 +3271,20 @@ const QUESTIONS = {
       {q:"What type of biome receives less than 25 cm of rainfall per year?", a:["Desert","Tundra","Savanna","Taiga"]},
       {q:"Which animal is known for changing its color to camouflage itself?", a:["Chameleon","Gecko","Iguana","Monitor lizard"]},
       {q:"What is the world's smallest bird?",                            a:["Bee hummingbird","Bumblebee bat","Lesser goldfinch","Elfin-woods warbler"]},
+      {q:"What is 'bioluminescence'?",                                   a:["The production of light by living organisms through chemical reactions — seen in fireflies, deep-sea fish, and some fungi","The reflection of moonlight off an animal's skin","The glow of radioactive minerals in cave environments","A type of UV fluorescence seen in scorpions and some fish"]},
+      {q:"What is the difference between a herbivore, carnivore, and omnivore?", a:["Herbivores eat only plants; carnivores eat only meat; omnivores eat both","Herbivores eat only fruit; carnivores eat meat and fish; omnivores eat plants and fungi","Carnivores eat only raw meat; herbivores eat cooked plants; omnivores eat everything","Omnivores are smaller than carnivores and larger than herbivores"]},
+      {q:"What is a coral reef made of?",                                a:["The calcium carbonate skeletons of coral polyps (tiny marine animals), built up over thousands of years","Compressed marine algae and seagrass","Volcanic rock colonised by barnacles and mussels","Hardened sea foam cemented by salt minerals"]},
+      {q:"How do bats navigate in the dark?",                            a:["Echolocation — emitting ultrasonic pulses and listening to echoes to map their surroundings","Infrared vision using heat signatures of prey","Magnetic field sensing using iron crystals in their heads","Highly sensitive vibrissal whiskers detecting air movements"]},
+      {q:"What is the term for an animal that is active at dawn and dusk?", a:["Crepuscular","Nocturnal","Diurnal","Cathemeral"]},
+      {q:"What is a keystone species?",                                  a:["A species whose removal from an ecosystem causes disproportionately large disruption — e.g., sea otters maintaining kelp forests by controlling sea urchins","The apex predator in any given food chain","The most abundant species in an ecosystem","Any endangered species protected by conservation law"]},
+      {q:"What is the difference between a food chain and a food web?",  a:["A food chain is a linear sequence of who eats whom; a food web shows the complex interconnected feeding relationships in an ecosystem","A food chain includes plants; a food web includes only animals","Food webs apply only to ocean ecosystems; food chains to terrestrial ones","They are the same concept with different names"]},
+      {q:"What adaptation allows Arctic foxes to survive extreme cold?",  a:["A thick double-layered fur coat, densely furred paws for traction on ice, and the ability to lower their metabolic rate — they can tolerate temperatures down to −70°C","Storing large fat reserves in their tails for insulation","Burrowing deep underground and entering true hibernation","Producing antifreeze proteins in their blood"]},
+      {q:"What is the role of decomposers in an ecosystem?",             a:["Breaking down dead organic matter into nutrients that are recycled back into the soil and water, completing the nutrient cycle","Eating producers at the base of the food chain","Controlling pest populations by feeding on insects","Converting sunlight into energy like producers"]},
+      {q:"Why do leaves change colour in autumn?",                       a:["As days shorten, chlorophyll breaks down, revealing yellow and orange pigments already present; red pigments are newly produced to recover nutrients before leaves drop","Cold temperatures cause the leaves to freeze and change colour","The tree withdraws water from leaves causing them to dry and change colour","Reduced sunlight causes leaves to produce different types of chlorophyll"]},
+      {q:"What is the migratory pattern of monarch butterflies?",        a:["They migrate up to 4,500 km from Canada/USA to oyamel fir forests in central Mexico each autumn — guided by magnetic sensing, sun position, and time of day","They migrate from Mexico to South America and back annually","Individual butterflies make the round trip across 3 generations","They migrate vertically — to higher altitudes in summer and lower in winter"]},
+      {q:"What is 'mimicry' in nature and give an example?",             a:["When a harmless species evolves to resemble a dangerous or unpalatable species for protection — e.g., the hoverfly resembling a wasp","When a predator disguises itself to ambush prey — e.g., a stick insect","When two species evolve similar features independently — e.g., shark and dolphin body shape","When an animal changes colour to match its background — e.g., a chameleon"]},
+      {q:"What is the largest fish in the ocean?",                       a:["Whale shark","Great white shark","Basking shark","Giant oarfish"]},
+      {q:"How do plants 'know' to grow toward sunlight?",                a:["Phototropism — auxin (a growth hormone) accumulates on the shaded side, causing cells there to elongate and bend the plant toward light","The roots grow away from light, pulling the plant upward","Chlorophyll in leaves is attracted to UV radiation electromagnetically","Plants detect light via a magnetic sense in their root tips"]},
     ],
     hard: [
       {q:"What toxin do poison dart frogs produce that blocks sodium channels in nerve cells?", a:["Batrachotoxin","Tetrodotoxin","Curare","Bufotoxin"]},
@@ -2699,6 +3308,21 @@ const QUESTIONS = {
       {q:"What is a zooxanthella and why are coral reefs dependent on it?", a:["Symbiotic algae living in coral tissue providing photosynthetic energy","A filter-feeding larva that builds reef structure","A bacterial film that cements coral polyps","A marine fungus that mineralizes calcium carbonate"]},
       {q:"What causes the phenomenon of bioluminescence in deep-sea creatures?", a:["Luciferin–luciferase chemical reaction producing cold light","Phosphorescent minerals in skin cells","Electrical discharge from specialized organs","Reflection of sunlight stored during surface feeding"]},
       {q:"Which migratory bird navigates using Earth's magnetic field detected via cryptochrome proteins in its eyes?", a:["European robin","Arctic tern","Bar-tailed godwit","Monarch butterfly"]},
+      {q:"What is 'convergent evolution' and give a classic example?",   a:["When unrelated species independently evolve similar traits — e.g., sharks (fish) and dolphins (mammals) both evolved streamlined torpedo-shaped bodies for aquatic locomotion","When two related species evolve different traits in different environments","When a single ancestral species diversifies into many adapted forms","When two species co-evolve in response to each other"]},
+      {q:"What is the 'wood wide web'?",                                 a:["The mycorrhizal fungal network connecting tree roots underground, enabling trees to share nutrients, water, and chemical signals across a forest","A root communication system using electrical signals between trees","A system of above-ground vine connections linking tree canopies","A theoretical model for how pheromones travel through forest air"]},
+      {q:"How does the mantis shrimp strike with such devastating force?", a:["Its club-like appendages accelerate at 10,000g — creating cavitation bubbles that collapse with shockwaves, briefly reaching temperatures near the Sun's surface","It injects a neurotoxin that paralyses prey instantly","Its claws generate a powerful electrical discharge","It uses hydraulic pressure built up in specialised leg joints"]},
+      {q:"What is 'island gigantism' and 'island dwarfism'?",            a:["Evolutionary tendencies where large mainland animals shrink and small animals grow larger on islands due to resource availability and absence of predators","Genetic mutations causing abnormal growth on islands with limited gene pools","The effect of island isolation on reproduction rates over generations","Size differences caused by different food sources between island and mainland populations"]},
+      {q:"What is the 'selfish gene' theory proposed by Richard Dawkins?", a:["The idea that evolution is best understood from the perspective of genes — organisms are 'vehicles' for genes, which 'want' to replicate themselves — explaining altruism (kin selection) and cooperation","The theory that organisms evolve to maximize their own survival at the expense of all others","A critique of group selection — evolution acts only on individuals, never populations","The principle that organisms with the most genes in the population are evolutionarily fittest"]},
+      {q:"What makes the axolotl biologically extraordinary?",           a:["It retains larval features throughout its adult life (neoteny) and can regenerate entire limbs, parts of the heart, spine, and even portions of the brain — making it a model organism for regeneration research","It can breathe air and water simultaneously using both lungs and gill slits","It is the only salamander species capable of true flight using skin flaps","It reproduces exclusively by parthenogenesis — without male fertilisation"]},
+      {q:"What is 'apoterism' or aposematism in animal biology?",        a:["Warning colouration — bright colours (red, orange, yellow, black) signalling to predators that an animal is toxic or unpalatable, as in poison dart frogs and monarch butterflies","The use of patterns to break up an animal's body outline against complex backgrounds","Mimicry of a more dangerous species without possessing toxins","The production of foul-smelling chemicals to deter predators"]},
+      {q:"What is the 'tragedy of the commons' in ecology?",             a:["When individuals, acting in rational self-interest, deplete a shared resource — e.g., overfishing common waters — to the detriment of all, because no single actor bears the full cost of overuse","When a keystone species is removed and the ecosystem collapses","A model explaining why apex predator populations decline faster than prey populations","The competition between invasive and native species for the same ecological niche"]},
+      {q:"What is 'phenotypic plasticity' in biology?",                  a:["The ability of a single genotype to produce different physical or behavioural traits in response to environmental conditions — e.g., Daphnia water fleas growing defensive spines when they detect predator chemicals","Random genetic mutation causing varied appearance within a species","The variation in physical traits caused by sexual recombination of genes","The process by which domesticated animals change appearance over generations"]},
+      {q:"How do 'electric eels' generate and use electric fields?",     a:["Specialised electrocytes (modified muscle cells) discharge simultaneously, producing up to 860 volts — used for hunting (stunning prey), navigation (electroreception), and communication","They store static electricity generated by swimming rapidly through water","They use a biological battery organ filled with electrolyte fluid","Their scales generate piezoelectric electricity when flexed during movement"]},
+      {q:"What is 'reciprocal altruism' in evolutionary biology?",       a:["A strategy where organisms help non-relatives expecting future reciprocation — e.g., vampire bats sharing blood meals with hungry roost-mates who will later reciprocate","The tendency for animals to help their genetic relatives at cost to themselves","Random acts of generosity with no evolutionary basis","Cooperation between symbiotic species that mutually benefit each other"]},
+      {q:"What is the 'nitrogen cycle' and why is it critical for ecosystems?", a:["The biogeochemical cycle converting atmospheric nitrogen (N₂) into usable forms (ammonia, nitrates) via nitrogen-fixing bacteria, then back to N₂ via denitrification — essential for amino acid and DNA synthesis in all life","The cycle by which nitrogen is transferred from animal waste to plants through decomposition only","The absorption of nitrogen by plants through their leaves from the atmosphere","A cycle driven entirely by lightning converting atmospheric N₂ to nitrates in rainfall"]},
+      {q:"What is a 'trophic cascade' and give a famous example?",       a:["When a change at the top of a food chain ripples through all lower levels — e.g., reintroducing wolves to Yellowstone reduced elk overgrazing, restoring riverbank vegetation and changing river courses","A collapse of an entire food web due to loss of a primary producer","The gradual increase in toxin concentration moving up the food chain (biomagnification)","A seasonal shift in which species occupies the apex predator role"]},
+      {q:"What biological mechanism allows migratory birds to detect Earth's magnetic field?", a:["Quantum effects in cryptochrome proteins in their eyes create radical pairs sensitive to magnetic field orientation — effectively letting them 'see' magnetic field lines","Iron nanoparticles in their beaks act as a compass","Magnetite crystals in their inner ear detect field direction","Electrical receptors in their skin similar to those in sharks"]},
+      {q:"What is 'sympatric speciation' and why is it controversial?",  a:["The formation of new species from a single ancestral population occupying the same geographic area — controversial because most models require some reproductive isolation to prevent gene flow between diverging groups","Speciation that occurs only on isolated islands","The process by which two species merge into one through interbreeding","Species formation driven exclusively by sexual selection within a population"]},
     ],
   },
 
@@ -2956,6 +3580,17 @@ function showResults() {
   const catName = CAT_NAMES[currentCat] || 'Same Category';
   document.getElementById('r-continue-btn').textContent = `▶ Continue: ${catName}`;
 
+  // Show/hide difficulty shift buttons (trivia + quiz master only, not charades)
+  const isTriviaMode = currentFlow !== 'charades';
+  const easierBtn = document.getElementById('r-easier-btn');
+  const harderBtn = document.getElementById('r-harder-btn');
+  easierBtn.style.display = isTriviaMode ? '' : 'none';
+  harderBtn.style.display = isTriviaMode ? '' : 'none';
+  easierBtn.disabled = currentDiff === 'easy';
+  harderBtn.disabled = currentDiff === 'hard';
+  easierBtn.textContent = currentDiff === 'hard'   ? '▼ Play Medium' : '▼ Play Easy';
+  harderBtn.textContent = currentDiff === 'easy'   ? '▲ Play Medium' : '▲ Play Hard';
+
   // Animate score count-up
   document.getElementById('r-score').textContent  = '0';
   showScreen('results');
@@ -2977,6 +3612,15 @@ function playAgain() {
   else startGame();
 }
 
+function changeDifficulty(direction) {
+  const order = ['easy', 'medium', 'hard'];
+  const idx   = order.indexOf(currentDiff);
+  if (direction === 'easier' && idx > 0)            currentDiff = order[idx - 1];
+  else if (direction === 'harder' && idx < 2)       currentDiff = order[idx + 1];
+  if (gameMode === 'host') startHostGame();
+  else startGame();
+}
+
 function quitGame() {
   clearInterval(timerID);
   showScreen('home');
@@ -2991,12 +3635,13 @@ function goBackFromDifficulty() {
 //  HOST / QUIZ MASTER MODE
 // ═══════════════════════════════════════════════════
 function startHostGame() {
+  // 'qm_' prefix keeps seen-tracking separate from solo Trivia mode.
   if (currentCat === 'random') {
     const pool = [];
     Object.keys(QUESTIONS).forEach(cat => pool.push(...QUESTIONS[cat][currentDiff]));
-    gameQs = pickFreshQuestions(pool, 'random_' + currentDiff, 20);
+    gameQs = pickFreshQuestions(pool, 'qm_random_' + currentDiff, 20);
   } else {
-    gameQs = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], currentCat + '_' + currentDiff, 20);
+    gameQs = pickFreshQuestions([...QUESTIONS[currentCat][currentDiff]], 'qm_' + currentCat + '_' + currentDiff, 20);
   }
   currentQIdx  = 0;
   score        = 0;
@@ -3654,9 +4299,9 @@ function pickFreshQuestions(pool, storeKey, count) {
       .map(qText => pool.find(q => q.q === qText))
       .filter(Boolean); // oldest at index 0, most-recent at end
     const needed = count - freshFirst.length;
-    // Shuffle the oldest slice to avoid identical ordering between sessions
-    const recycled = shuffle(oldestSeen.slice(0, needed + (oldestSeen.length - needed)));
-    picked = [...freshFirst, ...recycled.slice(0, needed)];
+    // Shuffle only the oldest `needed` entries so order varies but oldest-seen stay prioritized
+    const recycled = shuffle(oldestSeen.slice(0, needed));
+    picked = [...freshFirst, ...recycled];
     // Reset seen tracking for this key so the cycle starts clean
     delete store[storeKey];
     _saveSeenStore(store);
@@ -4236,6 +4881,42 @@ function quitTTAL() { showScreen('home'); }
   </a>
   <div class="footer-copy">© <span id="footer-year"></span> TableSmarts. All rights reserved.</div>
 </footer>
-<script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
+<script>
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  // Ad banner — moves into whichever screen is active
+  (function() {
+    const ad = document.getElementById('adBannerWrap');
+    const restore = document.getElementById('adDevRestore');
+
+    // Move ad to the bottom of the given screen element
+    function moveAdToScreen(screenEl) {
+      if (!ad.classList.contains('ad-hidden')) {
+        screenEl.appendChild(ad);
+      }
+    }
+
+    // Patch showScreen to carry the ad along
+    const _origShowScreen = window.showScreen;
+    window.showScreen = function(id) {
+      _origShowScreen(id);
+      const screenEl = document.getElementById('screen-' + id);
+      if (screenEl) moveAdToScreen(screenEl);
+    };
+
+    window.adToggle = function(show) {
+      if (show) {
+        ad.classList.remove('ad-hidden');
+        restore.classList.remove('ad-restore-visible');
+        // Re-attach to current active screen
+        const active = document.querySelector('.screen.active');
+        if (active) active.appendChild(ad);
+      } else {
+        ad.classList.add('ad-hidden');
+        restore.classList.add('ad-restore-visible');
+      }
+    };
+  })();
+</script>
 </body>
 </html>
